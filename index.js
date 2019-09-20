@@ -2,18 +2,19 @@ const git = require("simple-git/promise")("../aggregator");
 const request = require("request");
 
 async function getCommitMessages() {
-  //const commits = await git.log("0e306edb778e555635ccf68d79d86bcc5bb8c784", "d58ca90");
-  //const commits = await git.log("d58ca9000e24ec923bacb9ed49a85bd26e5d7157", "e1fdb4e6808759c28deacb105e547b0e2e44cf0c");
-  //const commits = await git.log("2315366ea16a563cb7ca977c3aeef9a2aa83348c", "2efdba984d227b94cb8ade2138d431ab88d0c68f");
-  //const commits = await git.log("445f3c7526fb0884de56d80826493047b031ab0d", "1085caa1162a6e35f11ab4d5500ce805e0273834");
-  //const commits = await git.log("756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", "4330830a89b312860c0f0eebe5b8330165843fd6");
-  const commits = await git.log("756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", "e21802abd1703f90a66bb9f9fcaac40d47e884ae");
 
 
   const messages = commits.all.map(commit => commit.message);
 
 
   return messages;
+  // const commits = await git.log("0e306edb778e555635ccf68d79d86bcc5bb8c784", "d58ca90");
+  // const commits = await git.log("d58ca9000e24ec923bacb9ed49a85bd26e5d7157", "e1fdb4e6808759c28deacb105e547b0e2e44cf0c");
+  // const commits = await git.log("2315366ea16a563cb7ca977c3aeef9a2aa83348c", "2efdba984d227b94cb8ade2138d431ab88d0c68f");
+  // const commits = await git.log("445f3c7526fb0884de56d80826493047b031ab0d", "1085caa1162a6e35f11ab4d5500ce805e0273834");
+  // const commits = await git.log("756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", "4330830a89b312860c0f0eebe5b8330165843fd6");
+  // const commits = await git.log("756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", "e21802abd1703f90a66bb9f9fcaac40d47e884ae");
+  // const commits = await git.log("756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", "c0ddb521a3a25e5f32d1e8010159e33622462525"); // Flat Earth
 }
 
 async function getUniquePivotalIds() {
