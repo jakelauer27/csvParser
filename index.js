@@ -27,9 +27,7 @@ async function getUniquePivotalIds() {
 
   allPivotalIds.forEach(id => uniquePivotalIdsMap[id] = true);
 
-  const uniquePivotalIds = Object.keys(uniquePivotalIdsMap);
-
-  return uniquePivotalIds;
+  return Object.keys(uniquePivotalIdsMap);
 }
 
 async function getUpsourceReviewQuery() {
