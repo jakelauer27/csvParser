@@ -30,10 +30,10 @@ async function getUniquePivotalIds() {
   return Object.keys(uniquePivotalIdsMap);
 }
 
-async function getUpsourceReviewQuery() {
-  const uniquePivotalIds = await getUniquePivotalIds();
+async function getUpsourceUrl(pivotalIds) {
+  const queryParam = `branch: master and not #{closed review} and (${pivotalIds.join(" or ")})`;
 
-  console.log(uniquePivotalIds.join(" or "));
+  return `https://upsource.campspot.com/consumer?query=${encodeURIComponent(queryParam).replace(/\(/, "%28").replace(/\)/, "%29")}`;
 }
 
 async function pivotalApiGetRequest(url) {
