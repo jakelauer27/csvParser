@@ -223,6 +223,9 @@ async function getReleaseInfo() {
       console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
     });
   }
+
+  console.log(`&nbsp;\n&nbsp;\n&nbsp;\n# Commits with open or no reviews:\n`);
+  console.log(`[View commits in upsource](${await getUpsourceUrl(uniquePivotalIds)})`);
 }
 
 getReleaseInfo();
