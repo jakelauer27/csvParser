@@ -130,96 +130,98 @@ async function getReleaseInfo() {
       console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
     });
   }
-  if (unacceptedStories.length > 0) {
-    const storiesWithReviews = await Promise.all(unacceptedStories.map(async (story) => {
-      story.reviews = await pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/projects/2145699/stories/${story.id}/reviews`);
 
-      if (story.reviews) {
-        story.reviews = story.reviews.filter(review => review.kind === "review");
-      } else {
-        story.reviews = [];
-      }
+  await Promise.all(pivotalStories.map(async (story) => {
+    story.reviews = await pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/projects/2145699/stories/${story.id}/reviews`);
 
-      story.codeReviews = story.reviews.filter(review => review.review_type_id === 7604);
-      story.qaReviews = story.reviews.filter(review => review.review_type_id === 7602);
-      story.designReviews = story.reviews.filter(review => review.review_type_id === 7603);
-      story.featureFlagReviews = story.reviews.filter(review => review.review_type_id === 5527847);
+    if (story.reviews && Array.isArray(story.reviews)) {
+      story.reviews = story.reviews.filter(review => review.kind === "review");
+    } else {
+      story.reviews = [];
+    }
 
-      story.requiresCodeReview = story.codeReviews.length === 0 || story.codeReviews.some(review => review.status !== "pass");
-      story.requiresDesignReview = story.designReviews.some(review => review.status !== "pass");
-      story.requiresQAReview = story.qaReviews.some(review => review.status !== "pass");
-      
-      story.hasFeatureFlagReviews = story.featureFlagReviews.length > 0;
-      story.requiresFeatureFlagReview = story.featureFlagReviews.some(review => review.status !== "pass");
-      story.passesFeatureFlagReview = story.hasFeatureFlagReviews && story.featureFlagReviews.every(review => review.status === "pass");
+    story.codeReviews = story.reviews.filter(review => review.review_type_id === 7604);
+    story.qaReviews = story.reviews.filter(review => review.review_type_id === 7602);
+    story.designReviews = story.reviews.filter(review => review.review_type_id === 7603);
+    story.featureFlagReviews = story.reviews.filter(review => review.review_type_id === 5527847);
 
-      return story;
-    }));
+    story.requiresCodeReview = story.codeReviews.length === 0 || story.codeReviews.some(review => review.status !== "pass");
+    story.requiresDesignReview = story.designReviews.some(review => review.status !== "pass");
+    story.requiresQAReview = story.qaReviews.some(review => review.status !== "pass");
 
-    console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Unaccepted stories without a tested feature flag:\n");
+    story.hasFeatureFlagReviews = story.featureFlagReviews.length > 0;
+    story.requiresFeatureFlagReview = story.featureFlagReviews.some(review => review.status !== "pass");
+    story.passesFeatureFlagReview = story.hasFeatureFlagReviews && story.featureFlagReviews.every(review => review.status === "pass");
+  }));
 
-    const storiesWithoutFeatureFlagReviews = storiesWithReviews.filter(story => !story.passesFeatureFlagReview);
+  console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Unaccepted stories without a tested feature flag:\n");
 
-    storiesWithoutFeatureFlagReviews.forEach((story) => {
-      let noFeatureFlagText = ``;
+  const storiesWithoutFeatureFlagReviews = unacceptedStories.filter(story => !story.passesFeatureFlagReview);
 
-      if (!story.hasFeatureFlagReviews) {
-        noFeatureFlagText = ` (no feature flag)`;
-      }
+  storiesWithoutFeatureFlagReviews.forEach((story) => {
+    let noFeatureFlagText = ``;
 
-      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}${noFeatureFlagText}`);
+    if (!story.hasFeatureFlagReviews) {
+      noFeatureFlagText = ` (no feature flag)`;
+    }
+
+    console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}${noFeatureFlagText}`);
+  });
+
+  const storiesRequiringCodeReview = pivotalStories.filter(story => story.requiresCodeReview);
+
+  if (storiesRequiringCodeReview.length > 0) {
+    console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring code review:\n");
+
+    storiesRequiringCodeReview.forEach((story) => {
+      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
     });
-    
+  }
 
-    const storiesRequiringCodeReview = storiesWithReviews.filter(story => story.requiresCodeReview);
+  const storiesRequiringQAReview = pivotalStories
+      .filter(story => story.requiresQAReview)
+      .filter(story => !story.hasFeatureFlagReviews)
+      .filter(story => !story.isPrototype);
 
-    if (storiesRequiringCodeReview.length > 0) {
-      console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring code review:\n");
+  if (storiesRequiringQAReview.length > 0) {
+    console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring QA review:\n");
 
-      storiesRequiringCodeReview.forEach((story) => {
-        console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-      });
-    }
+    storiesRequiringQAReview.forEach((story) => {
+      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
+    });
+  }
 
-    const storiesRequiringQAReview = storiesWithReviews.filter(story => story.requiresQAReview && !story.passesFeatureFlagReview);
+  const storiesRequiringDesignReview = pivotalStories
+      .filter(story => story.requiresDesignReview)
+      .filter(story => !story.hasFeatureFlagReviews)
+      .filter(story => !story.isPrototype);
 
-    if (storiesRequiringQAReview.length > 0) {
-      console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring QA review:\n");
+  if (storiesRequiringDesignReview.length > 0) {
+    console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring design review:\n");
 
-      storiesRequiringQAReview.forEach((story) => {
-        console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-      });
-    }
+    storiesRequiringDesignReview.forEach((story) => {
+      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
+    });
+  }
 
-    const storiesRequiringDesignReview = storiesWithReviews.filter(story => story.requiresDesignReview && !story.passesFeatureFlagReview);
+  const storiesRequiringFeatureFlagReviews = pivotalStories.filter(story => story.requiresFeatureFlagReview);
 
-    if (storiesRequiringDesignReview.length > 0) {
-      console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring design review:\n");
+  if (storiesRequiringFeatureFlagReviews.length > 0) {
+    console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring feature flag reviews:\n");
 
-      storiesRequiringDesignReview.forEach((story) => {
-        console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-      });
-    }
+    storiesRequiringFeatureFlagReviews.forEach((story) => {
+      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
+    });
+  }
 
-    const storiesWithFeatureFlagReviews = storiesWithReviews.filter(story => story.hasFeatureFlagReviews);
+  const storiesWithFeatureFlagReviews = pivotalStories.filter(story => story.hasFeatureFlagReviews);
 
-    if (storiesWithFeatureFlagReviews.length > 0) {
-      console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories with feature flag reviews:\n");
+  if (storiesWithFeatureFlagReviews.length > 0) {
+    console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories with feature flag reviews:\n");
 
-      storiesWithFeatureFlagReviews.forEach((story) => {
-        console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-      });
-    }
-
-    const storiesRequiringFeatureFlagReviews = storiesWithReviews.filter(story => story.requiresFeatureFlagReview);
-
-    if (storiesRequiringFeatureFlagReviews.length > 0) {
-      console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring feature flag reviews:\n");
-
-      storiesRequiringFeatureFlagReviews.forEach((story) => {
-        console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-      });
-    }
+    storiesWithFeatureFlagReviews.forEach((story) => {
+      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
+    });
   }
 }
 
