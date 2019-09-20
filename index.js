@@ -80,16 +80,21 @@ async function getReleaseInfo() {
     .filter(story => story !== null)
     .filter(story => story.kind === "story");
 
+  pivotalStories.forEach((story) => {
+    story.isNewConsumer = story.labels.some(label => label.kind === "label" && label.name === "new consumer");
+    story.isPrototype = story.labels.some(label => label.kind === "label" && label.name === "prototype");
+  });
+
   const newConsumerStories = pivotalStories
-    .filter(story => story.labels.some(label => label.kind === "label" && label.name === "new consumer"))
+    .filter(story => story.isNewConsumer)
     .sort(sortStoryFunction);
-  
+
   const prototypeStories = pivotalStories
-    .filter(story => story.labels.some(label => label.kind === "label" && label.name === "prototype"))
+    .filter(story => story.isPrototype)
     .sort(sortStoryFunction);
-  
+
   const otherStories = pivotalStories
-    .filter(story => story.labels.every(label => label.kind !== "label" || (label.name !== "prototype" && label.name !== "new consumer")))
+    .filter(story => !story.isNewConsumer && !story.isPrototype)
     .sort(sortStoryFunction);
 
   const unacceptedStories = pivotalStories
@@ -98,7 +103,7 @@ async function getReleaseInfo() {
 
   if (newConsumerStories.length > 0) {
     console.log("# New consumer stories:\n");
-    
+
     newConsumerStories.forEach((story) => {
       console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
     });
