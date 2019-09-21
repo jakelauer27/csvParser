@@ -1,6 +1,8 @@
 const git = require("simple-git/promise")("../aggregator");
 const request = require("request");
 
+let numberOfStoriesPrinted = 0;
+
 async function getCommitMessages() {
   // const commits = await git.log("0e306edb778e555635ccf68d79d86bcc5bb8c784", "d58ca90");
   // const commits = await git.log("d58ca9000e24ec923bacb9ed49a85bd26e5d7157", "e1fdb4e6808759c28deacb105e547b0e2e44cf0c");
@@ -59,9 +61,12 @@ async function pivotalApiGetRequest(url) {
 
 function getStoryDisplayIndex(story) {
   switch (story.story_type) {
-    case "feature": return 1;
-    case "bug": return 2;
-    case "chore": return 3;
+    case "feature":
+      return 1;
+    case "bug":
+      return 2;
+    case "chore":
+      return 3;
   }
 }
 
@@ -69,69 +74,36 @@ function sortStoryFunction(a, b) {
   return getStoryDisplayIndex(a) - getStoryDisplayIndex(b);
 }
 
-async function getReleaseInfo() {
-  const uniquePivotalIds = await getUniquePivotalIds();
+function printStoryInfo(story) {
+  let noFeatureFlagText = ``;
 
-  const pivotalStoriesIncludingNull = await Promise.all(uniquePivotalIds.map((id) => {
-    return pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/stories/${id}`);
-  }));
-
-  const pivotalStories = pivotalStoriesIncludingNull
-    .filter(story => story !== null)
-    .filter(story => story.kind === "story");
-
-  pivotalStories.forEach((story) => {
-    story.isNewConsumer = story.labels.some(label => label.kind === "label" && label.name === "new consumer");
-    story.isPrototype = story.labels.some(label => label.kind === "label" && label.name === "prototype");
-  });
-
-  const newConsumerStories = pivotalStories
-    .filter(story => story.isNewConsumer)
-    .sort(sortStoryFunction);
-
-  const prototypeStories = pivotalStories
-    .filter(story => story.isPrototype)
-    .sort(sortStoryFunction);
-
-  const otherStories = pivotalStories
-    .filter(story => !story.isNewConsumer && !story.isPrototype)
-    .sort(sortStoryFunction);
-
-  const unacceptedStories = pivotalStories
-    .filter(story => story.current_state !== "accepted")
-    .sort(sortStoryFunction);
-
-  if (newConsumerStories.length > 0) {
-    console.log("# New consumer stories:\n");
-
-    newConsumerStories.forEach((story) => {
-      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-    });
+  if (!story.hasFeatureFlagReviews) {
+    noFeatureFlagText = ` (no feature flag)`;
   }
-  if (prototypeStories.length > 0) {
-    if (newConsumerStories.length > 0) {
-      console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Prototype stories:\n");
-    } else {
-      console.log("# Prototype stories:\n");
+
+  console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}${noFeatureFlagText}`);
+
+  numberOfStoriesPrinted++;
+}
+
+function printListOfStories(header, stories) {
+  if (stories.length > 0) {
+    stories.sort(sortStoryFunction);
+
+    let newLines = ``;
+
+    if (numberOfStoriesPrinted > 0) {
+      newLines = `&nbsp;\n&nbsp;\n&nbsp;\n`;
     }
 
-    prototypeStories.forEach((story) => {
-      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-    });
-  }
-  if (otherStories.length > 0) {
-    if (newConsumerStories.length > 0 || prototypeStories.length > 0) {
-      console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Other stories:\n");
-    } else {
-      console.log("# All stories:\n");
-    }
+    console.log(`${newLines}# ${header}:\n`);
 
-    otherStories.forEach((story) => {
-      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-    });
+    stories.forEach(printStoryInfo);
   }
+}
 
-  await Promise.all(pivotalStories.map(async (story) => {
+async function attachReviewInfoToStories(stories) {
+  return await Promise.all(stories.map(async (story) => {
     story.reviews = await pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/projects/2145699/stories/${story.id}/reviews`);
 
     if (story.reviews && Array.isArray(story.reviews)) {
@@ -153,76 +125,80 @@ async function getReleaseInfo() {
     story.requiresFeatureFlagReview = story.featureFlagReviews.some(review => review.status !== "pass");
     story.passesFeatureFlagReview = story.hasFeatureFlagReviews && story.featureFlagReviews.every(review => review.status === "pass");
   }));
+}
 
-  console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Unaccepted stories without a tested feature flag:\n");
+async function getReleaseInfo() {
+  const uniquePivotalIds = await getUniquePivotalIds();
 
-  const storiesWithoutFeatureFlagReviews = unacceptedStories.filter(story => !story.passesFeatureFlagReview);
+  const pivotalStoriesIncludingNull = await Promise.all(uniquePivotalIds.map((id) => {
+    return pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/stories/${id}`);
+  }));
 
-  storiesWithoutFeatureFlagReviews.forEach((story) => {
-    let noFeatureFlagText = ``;
+  const pivotalStories = pivotalStoriesIncludingNull
+    .filter(story => story !== null)
+    .filter(story => story.kind === "story");
 
-    if (!story.hasFeatureFlagReviews) {
-      noFeatureFlagText = ` (no feature flag)`;
-    }
-
-    console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}${noFeatureFlagText}`);
+  pivotalStories.forEach((story) => {
+    story.isNewConsumer = story.labels.some(label => label.kind === "label" && label.name === "new consumer");
+    story.isPrototype = story.labels.some(label => label.kind === "label" && label.name === "prototype");
   });
 
-  const storiesRequiringCodeReview = pivotalStories.filter(story => story.requiresCodeReview);
+  printListOfStories(
+    "New consumer stories",
+    pivotalStories.filter(story => story.isNewConsumer)
+  );
 
-  if (storiesRequiringCodeReview.length > 0) {
-    console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring code review:\n");
+  printListOfStories(
+    "Prototype stories",
+    pivotalStories.filter(story => story.isPrototype)
+  );
 
-    storiesRequiringCodeReview.forEach((story) => {
-      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-    });
-  }
+  printListOfStories(
+    numberOfStoriesPrinted > 0 ? "Other stories" : "All stories",
+    pivotalStories
+      .filter(story => !story.isNewConsumer)
+      .filter(story => !story.isPrototype)
+  );
 
-  const storiesRequiringQAReview = pivotalStories
+  await attachReviewInfoToStories(pivotalStories);
+
+  printListOfStories(
+    "Unaccepted stories without a tested feature flag",
+    pivotalStories
+      .filter(story => story.current_state !== "accepted")
+      .filter(story => !story.passesFeatureFlagReview)
+  );
+
+  printListOfStories(
+    "Stories requiring code review",
+    pivotalStories.filter(story => story.requiresCodeReview)
+  );
+
+  printListOfStories(
+    "Stories requiring QA review",
+    pivotalStories
       .filter(story => story.requiresQAReview)
       .filter(story => !story.hasFeatureFlagReviews)
-      .filter(story => !story.isPrototype);
+      .filter(story => !story.isPrototype)
+  );
 
-  if (storiesRequiringQAReview.length > 0) {
-    console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring QA review:\n");
-
-    storiesRequiringQAReview.forEach((story) => {
-      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-    });
-  }
-
-  const storiesRequiringDesignReview = pivotalStories
+  printListOfStories(
+    "Stories requiring design review",
+    pivotalStories
       .filter(story => story.requiresDesignReview)
       .filter(story => !story.hasFeatureFlagReviews)
-      .filter(story => !story.isPrototype);
+      .filter(story => !story.isPrototype)
+  );
 
-  if (storiesRequiringDesignReview.length > 0) {
-    console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring design review:\n");
+  printListOfStories(
+    "Stories requiring feature flag reviews",
+    pivotalStories.filter(story => story.requiresFeatureFlagReview)
+  );
 
-    storiesRequiringDesignReview.forEach((story) => {
-      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-    });
-  }
-
-  const storiesRequiringFeatureFlagReviews = pivotalStories.filter(story => story.requiresFeatureFlagReview);
-
-  if (storiesRequiringFeatureFlagReviews.length > 0) {
-    console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories requiring feature flag reviews:\n");
-
-    storiesRequiringFeatureFlagReviews.forEach((story) => {
-      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-    });
-  }
-
-  const storiesWithFeatureFlagReviews = pivotalStories.filter(story => story.hasFeatureFlagReviews);
-
-  if (storiesWithFeatureFlagReviews.length > 0) {
-    console.log("&nbsp;\n&nbsp;\n&nbsp;\n# Stories with feature flag reviews:\n");
-
-    storiesWithFeatureFlagReviews.forEach((story) => {
-      console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}`);
-    });
-  }
+  printListOfStories(
+    "Stories with feature flag reviews",
+    pivotalStories.filter(story => story.hasFeatureFlagReviews)
+  );
 
   console.log(`&nbsp;\n&nbsp;\n&nbsp;\n# Commits with open or no reviews:\n`);
   console.log(`[View commits in upsource](${await getUpsourceUrl(uniquePivotalIds)})`);
