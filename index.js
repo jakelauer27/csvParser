@@ -90,13 +90,8 @@ function printListOfStories(header, stories) {
   if (stories.length > 0) {
     stories.sort(sortStoryFunction);
 
-    let newLines = ``;
-
-    if (numberOfStoriesPrinted > 0) {
-      newLines = `&nbsp;\n&nbsp;\n&nbsp;\n`;
-    }
-
-    console.log(`${newLines}# ${header}:\n`);
+    console.log(`&nbsp;\n&nbsp;\n&nbsp;`);
+    console.log(`# ${header}:\n`);
 
     stories.forEach(printStoryInfo);
   }
@@ -142,6 +137,14 @@ async function getReleaseInfo() {
     story.isNewConsumer = story.labels.some(label => label.kind === "label" && label.name === "new consumer");
     story.isPrototype = story.labels.some(label => label.kind === "label" && label.name === "prototype");
   });
+
+  const features = pivotalStories.filter(story => story.story_type === "feature");
+  const chores = pivotalStories.filter(story => story.story_type === "chore");
+  const bugs = pivotalStories.filter(story => story.story_type === "bug");
+
+  console.log(`${features.length} Features`);
+  console.log(`${chores.length} Chores`);
+  console.log(`${bugs.length} Bugs`);
 
   printListOfStories(
     "New consumer stories",
