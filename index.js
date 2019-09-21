@@ -1,5 +1,6 @@
 const git = require("simple-git/promise")("../aggregator");
 const request = require("request");
+const Rox = require("rox-node");
 
 let numberOfStoriesPrinted = 0;
 
@@ -23,6 +24,36 @@ async function getUniquePivotalIds() {
   allPivotalIds.forEach(id => uniquePivotalIdsMap[id] = true);
 
   return Object.keys(uniquePivotalIdsMap);
+}
+
+function getFeatureFlagData(story) {
+  if (!story.description) {
+    return [];
+  }
+
+  const featureFlagNameMatches = [...story.description.matchAll(/(^|[^\w.?/])([a-z]\w+\.[a-z]\w+)([^\w.?/]|$)/g)];
+
+  return featureFlagNameMatches
+    .filter(match => match)
+    .filter(match => match.length >= 3)
+    .filter(match => match[2])
+    .map((match) => {
+      const fullFeatureFlagName = match[2];
+
+      const fullNameComponents = fullFeatureFlagName.split(/\./);
+
+      const container = fullNameComponents[0];
+      const name = fullNameComponents[1];
+
+      return {
+        fullName: fullFeatureFlagName,
+        fullNameComponents: fullNameComponents,
+        container: container,
+        name: name,
+        url: `https://app.rollout.io/app/5be1d296b38fed12b215194a/flags?filter=${fullFeatureFlagName}`
+      };
+    })
+    .filter(flagData => !/^(js|ts|png|gradle|io|kt|java|hooksPath)$/gi.test(flagData.name));
 }
 
 async function getUpsourceUrl(pivotalIds) {
@@ -68,13 +99,21 @@ function sortStoryFunction(a, b) {
 }
 
 function printStoryInfo(story) {
-  let noFeatureFlagText = ``;
+  let flagText = ``;
 
-  if (!story.hasFeatureFlagReviews) {
-    noFeatureFlagText = ` (no feature flag)`;
+  if (story.hasFeatureFlagReviews) {
+    if (story.flags.length > 0) {
+      flagText = story.flags
+        .map(flag => `[Flag (${flag.enabled ? 'on' : 'off'})](${flag.url})`)
+        .join(" ");
+    } else {
+      flagText = `(description missing flag)`;
+    }
+  } else {
+    flagText = `(no flags)`;
   }
 
-  console.log(`#${story.id} [${story.story_type}] ${story.name.trim()}${noFeatureFlagText}`);
+  console.log(`#${story.id} [${story.story_type}] ${story.name.trim()} ${flagText}`);
 
   numberOfStoriesPrinted++;
 }
@@ -115,6 +154,51 @@ async function attachReviewInfoToStories(stories) {
   }));
 }
 
+async function attachRolloutInfoToStories(stories) {
+  await Rox.setup("5be1d296b38fed12b215194d");
+
+  const containers = {};
+
+  stories.forEach((story) => {
+    story.flags.forEach((flag) => {
+      if (!containers[flag.container]) {
+        containers[flag.container] = {};
+      }
+      if (!containers[flag.container][flag.name]) {
+        containers[flag.container][flag.name] = new Rox.Flag(flag.name);
+      }
+    });
+  });
+
+  await Promise.all(
+    Object.keys(containers)
+      .map((containerName) => {
+        const containerValue = containers[containerName];
+
+        return Rox.register(containerName, containerValue);
+      })
+  );
+
+  stories.forEach((story) => {
+    story.flags.forEach((flag) => {
+      flag.rollout = {
+        container: containers[flag.container],
+        flag: containers[flag.container][flag.name]
+      };
+
+      flag.enabled = flag.rollout.flag.isEnabled();
+    });
+  });
+}
+
+function attachFlagInfoToStories(stories) {
+  stories.forEach((story) => {
+    story.flags = getFeatureFlagData(story);
+  });
+
+  return stories;
+}
+
 async function getReleaseInfo() {
   const uniquePivotalIds = await getUniquePivotalIds();
 
@@ -131,7 +215,10 @@ async function getReleaseInfo() {
     story.isPrototype = story.labels.some(label => label.kind === "label" && label.name === "prototype");
   });
 
+  attachFlagInfoToStories(pivotalStories);
+
   await attachReviewInfoToStories(pivotalStories);
+  await attachRolloutInfoToStories(pivotalStories);
 
   const features = pivotalStories.filter(story => story.story_type === "feature");
   const chores = pivotalStories.filter(story => story.story_type === "chore");
@@ -200,4 +287,6 @@ async function getReleaseInfo() {
   console.log(`[View commits in upsource](${await getUpsourceUrl(uniquePivotalIds)})`);
 }
 
-getReleaseInfo();
+getReleaseInfo().then(() => {
+  process.exit();
+});
