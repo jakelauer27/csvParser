@@ -4,12 +4,6 @@ const request = require("request");
 let numberOfStoriesPrinted = 0;
 
 async function getCommitMessages() {
-  // const commits = await git.log({from: "0e306edb778e555635ccf68d79d86bcc5bb8c784", to: "d58ca90"});
-  // const commits = await git.log({from: "d58ca9000e24ec923bacb9ed49a85bd26e5d7157", to: "e1fdb4e6808759c28deacb105e547b0e2e44cf0c"});
-  // const commits = await git.log({from: "2315366ea16a563cb7ca977c3aeef9a2aa83348c", to: "2efdba984d227b94cb8ade2138d431ab88d0c68f"});
-  // const commits = await git.log({from: "445f3c7526fb0884de56d80826493047b031ab0d", to: "1085caa1162a6e35f11ab4d5500ce805e0273834"});
-  // const commits = await git.log({from: "756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", to: "4330830a89b312860c0f0eebe5b8330165843fd6"});
-  // const commits = await git.log({from: "756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", to: "e21802abd1703f90a66bb9f9fcaac40d47e884ae"});
   // const commits = await git.log({from: "756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", to: "c0ddb521a3a25e5f32d1e8010159e33622462525"}); // Flat Earth
   const commits = await git.log({from: "c0ddb521a3a25e5f32d1e8010159e33622462525", to: "HEAD"}); // Illuminati
 
