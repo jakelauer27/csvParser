@@ -11,7 +11,7 @@ async function getCommitMessages() {
   // const commits = await git.log({from: "756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", to: "4330830a89b312860c0f0eebe5b8330165843fd6"});
   // const commits = await git.log({from: "756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", to: "e21802abd1703f90a66bb9f9fcaac40d47e884ae"});
   // const commits = await git.log({from: "756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", to: "c0ddb521a3a25e5f32d1e8010159e33622462525"}); // Flat Earth
-  const commits = await git.log({from: "c0ddb521a3a25e5f32d1e8010159e33622462525", to: "6e85f3ea1733f3d538ffef8682b62fd14ff6f1dc"}); // Illuminati
+  const commits = await git.log({from: "c0ddb521a3a25e5f32d1e8010159e33622462525", to: "HEAD"}); // Illuminati
 
   return commits.all.map(commit => commit.message);
 }
