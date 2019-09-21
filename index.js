@@ -20,10 +20,9 @@ async function getUniquePivotalIds() {
   const messages = await getCommitMessages();
 
   const allPivotalIds = messages
-    .map(message => /(^|\s+)\[\#?(\d+)/g.exec(message))
+    .map(message => /(^|\s+)\[#?(\d+)/g.exec(message))
     .filter(groups => groups && groups.length > 2)
     .map(groups => groups[2]);
-
 
   const uniquePivotalIdsMap = {};
 
