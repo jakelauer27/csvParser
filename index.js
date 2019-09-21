@@ -138,6 +138,8 @@ async function getReleaseInfo() {
     story.isPrototype = story.labels.some(label => label.kind === "label" && label.name === "prototype");
   });
 
+  await attachReviewInfoToStories(pivotalStories);
+
   const features = pivotalStories.filter(story => story.story_type === "feature");
   const chores = pivotalStories.filter(story => story.story_type === "chore");
   const bugs = pivotalStories.filter(story => story.story_type === "bug");
@@ -162,8 +164,6 @@ async function getReleaseInfo() {
       .filter(story => !story.isNewConsumer)
       .filter(story => !story.isPrototype)
   );
-
-  await attachReviewInfoToStories(pivotalStories);
 
   printListOfStories(
     "Unaccepted stories without a tested feature flag",
