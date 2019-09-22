@@ -31,7 +31,7 @@ function getFeatureFlagData(story) {
     return [];
   }
 
-  const featureFlagNameMatches = [...story.description.matchAll(/(^|[^\w.?/])([a-z]\w+\.[a-z]\w+)([^\w.?/]|$)/g)];
+  const featureFlagNameMatches = [...story.description.matchAll(/(^|[^\w.?/])([a-z]\w+\.[a-z]\w+)([^\w.?/]|$)/gm)];
 
   return featureFlagNameMatches
     .filter(match => match)
