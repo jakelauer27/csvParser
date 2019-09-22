@@ -229,6 +229,13 @@ async function getReleaseInfo() {
   console.log(`${bugs.length} Bugs`);
 
   printListOfStories(
+    "Stories to have flags turned on",
+    pivotalStories
+      .filter(story => story.current_state === "accepted")
+      .filter(story => story.flags.some(flag => !flag.enabled))
+  );
+
+  printListOfStories(
     "New consumer stories",
     pivotalStories.filter(story => story.isNewConsumer)
   );
