@@ -36,7 +36,7 @@ function getFeatureFlagData(story) {
   return featureFlagNameMatches
     .filter(match => match)
     .filter(match => match.length >= 3)
-    .filter(match => match[2])
+    .filter(match => !!match[2])
     .map((match) => {
       const fullFeatureFlagName = match[2];
 
