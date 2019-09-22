@@ -131,7 +131,7 @@ function printListOfStories(header, stories) {
 
 async function attachReviewInfoToStories(stories) {
   return await Promise.all(stories.map(async (story) => {
-    story.reviews = await pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/projects/2145699/stories/${story.id}/reviews`);
+    story.reviews = await pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/projects/${story.project_id}/stories/${story.id}/reviews`);
 
     if (story.reviews && Array.isArray(story.reviews)) {
       story.reviews = story.reviews.filter(review => review.kind === "review");
