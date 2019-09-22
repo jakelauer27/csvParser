@@ -165,7 +165,7 @@ async function attachRolloutInfoToStories(stories) {
         containers[flag.container] = {};
       }
       if (!containers[flag.container][flag.name]) {
-        containers[flag.container][flag.name] = new Rox.Flag(flag.name);
+        containers[flag.container][flag.name] = new Rox.Flag();
       }
     });
   });
