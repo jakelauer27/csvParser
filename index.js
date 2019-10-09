@@ -269,7 +269,7 @@ async function getReleaseInfo() {
     "Stories requiring QA review",
     pivotalStories
       .filter(story => story.requiresQAReview)
-      .filter(story => !story.hasFeatureFlagReviews)
+      .filter(story => !story.hasFeatureFlagReviews || story.flags.some(flag => flag.enabled))
       .filter(story => !story.isPrototype)
   );
 
