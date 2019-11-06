@@ -301,7 +301,10 @@ async function getReleaseInfo() {
 
   printListOfStories(
     "Stories requiring code review",
-    pivotalStories.filter(story => story.requiresCodeReview)
+    storiesOnRelease.filter(story => story.requiresCodeReview),
+    {
+      printUpsource: true
+    }
   );
 
   printListOfStories(
