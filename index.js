@@ -60,10 +60,16 @@ function getFeatureFlagData(story) {
     .filter(flagData => !/^(js|ts|png|gradle|io|kt|java|hooksPath)$/gi.test(flagData.name));
 }
 
-async function getUpsourceUrl(pivotalIds) {
-  const queryParam = `branch: master and not #{closed review} and (${pivotalIds.join(" or ")})`;
+function getAllUnclosedReviewsUpsourceUrl(pivotalIds) {
+  return getUpsourceUrl(`branch: master and not #{closed review} and (${pivotalIds.join(" or ")})`);
+}
 
-  return `https://upsource.campspot.com/consumer?query=${encodeURIComponent(queryParam).replace(/\(/, "%28").replace(/\)/, "%29")}`;
+function getStoryReviewsUpsourceUrl(story) {
+  return getUpsourceUrl(`branch: master and ${story.id}`);
+}
+
+function getUpsourceUrl(query) {
+  return `https://upsource.campspot.com/consumer?query=${encodeURIComponent(query).replace(/\(/, "%28").replace(/\)/, "%29")}`;
 }
 
 async function pivotalApiGetRequest(url) {
@@ -295,7 +301,7 @@ async function getReleaseInfo() {
   );
 
   console.log(`&nbsp;\n&nbsp;\n&nbsp;\n# Commits with open or no reviews:\n`);
-  console.log(`[View commits in upsource](${await getUpsourceUrl(uniquePivotalIds)})`);
+  console.log(`[View commits in upsource](${getAllUnclosedReviewsUpsourceUrl(uniquePivotalIds)})`);
 }
 
 getReleaseInfo().then(() => {
