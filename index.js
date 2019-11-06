@@ -186,6 +186,8 @@ async function attachRolloutInfoToStories(stories) {
   const containers = {};
 
   stories.forEach((story) => {
+    story.flags = story.hasFeatureFlagReviews ? story.flags : [];
+
     story.flags.forEach((flag) => {
       if (!containers[flag.container]) {
         containers[flag.container] = {};
