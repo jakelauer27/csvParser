@@ -108,7 +108,7 @@ function sortStoryFunction(a, b) {
   return getStoryDisplayIndex(a) - getStoryDisplayIndex(b);
 }
 
-function printStoryInfo(story) {
+function printStoryInfo(story, options = {}) {
   let flagText = ``;
 
   if (story.hasFeatureFlagReviews) {
@@ -123,19 +123,35 @@ function printStoryInfo(story) {
     flagText = `(no flags)`;
   }
 
-  console.log(`#${story.id} [${story.story_type}] ${story.name.trim()} ${flagText}`);
+  let upsourceLink = ``;
+
+  if (story.requiresCodeReview) {
+    upsourceLink = `[Upsource](${getStoryReviewsUpsourceUrl(story)})`;
+  }
+
+  const components = [
+    `#${story.id} [${story.story_type}] ${story.name.trim()}`,
+    flagText,
+    options.printUpsource ? upsourceLink : ''
+  ];
+
+  const storyInfo = components
+    .filter(str => !!str)
+    .join(" ");
+
+  console.log(storyInfo);
 
   numberOfStoriesPrinted++;
 }
 
-function printListOfStories(header, stories) {
+function printListOfStories(header, stories, options = {}) {
   if (stories.length > 0) {
     stories.sort(sortStoryFunction);
 
     console.log(`&nbsp;\n&nbsp;\n&nbsp;`);
     console.log(`# ${header}:\n`);
 
-    stories.forEach(printStoryInfo);
+    stories.forEach((story) => printStoryInfo(story, options));
   }
 }
 
