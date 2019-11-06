@@ -180,6 +180,66 @@ async function attachReviewInfoToStories(stories) {
   }));
 }
 
+async function attachBlockersToStories(stories) {
+  await Promise.all(stories.filter(story => !story.blockers).map(async (story) => {
+    story.blockers = await pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/projects/${story.project_id}/stories/${story.id}/blockers`);
+
+    if (!Array.isArray(story.blockers)) {
+      story.blockers = [];
+    } else {
+      story.blockers
+        .filter(blocker => blocker.description.startsWith("#"))
+        .forEach((blocker) => {
+          blocker.storyIdFromDescription = parseInt(blocker.description.substr(1).trim());
+        });
+    }
+  }));
+
+  await addMissingStoriesFromBlockers(stories);
+}
+
+async function addMissingStoriesFromBlockers(stories) {
+  const blockerStoryIds = {};
+  const existingStoryIds = {};
+
+  stories.forEach((story) => {
+    existingStoryIds[story.id] = true;
+  });
+
+  stories.forEach((story) => {
+    story.blockers
+      .filter(blocker => blocker.storyIdFromDescription)
+      .filter(blocker => !existingStoryIds[blocker.storyIdFromDescription])
+      .forEach(blocker => blockerStoryIds[blocker.storyIdFromDescription] = true);
+  });
+
+  const newStoryIds = Object.keys(blockerStoryIds);
+
+  let newStories = await Promise.all(newStoryIds.map(async (storyId) => {
+    return await pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/stories/${storyId}`);
+  }));
+
+  newStories = newStories
+    .filter(story => story !== null)
+    .filter(story => story.kind === "story");
+
+  newStories.forEach((story) => {
+    story.transient = true;
+
+    stories.push(story);
+  });
+
+  if (newStories.length > 0) {
+    await attachBlockersToStories(stories);
+  } else {
+    stories.forEach((story) => {
+      story.blockers = story.blockers.map((blocker) => {
+        return stories.find(s => s.id == blocker.storyIdFromDescription) || blocker;
+      });
+    });
+  }
+}
+
 async function attachRolloutInfoToStories(stories) {
   await Rox.setup("5be1d296b38fed12b215194d");
 
@@ -253,6 +313,8 @@ async function getReleaseInfo() {
     story.isPrototype = story.labels.some(label => label.kind === "label" && label.name === "prototype");
   });
 
+  await attachBlockersToStories(pivotalStories);
+
   attachFlagInfoToStories(pivotalStories);
 
   await attachReviewInfoToStories(pivotalStories);
@@ -277,6 +339,19 @@ async function getReleaseInfo() {
     pivotalStories
       .filter(story => story.current_state === "accepted")
       .filter(story => story.flags.some(flag => !flag.enabled))
+      .filter(story => {
+        const storiesWithSameFlag = pivotalStories
+          .filter(s => s !== story)
+          .filter(s => {
+            return s.flags.some((flag1) => {
+              return story.flags.some((flag2) => {
+                return flag1.fullName === flag2.fullName;
+              });
+            });
+          });
+
+        return storiesWithSameFlag.every(s => s.current_state === "accepted");
+      })
   );
 
   printListOfStories(
