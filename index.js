@@ -172,7 +172,7 @@ async function attachReviewInfoToStories(stories) {
 
     story.requiresCodeReview = story.codeReviews.length === 0 || story.codeReviews.some(review => review.status !== "pass");
     story.requiresDesignReview = story.designReviews.some(review => review.status !== "pass");
-    story.requiresQAReview = story.qaReviews.some(review => review.status !== "pass");
+    story.requiresQAReview = ((story.story_type === "feature" || story.story_type === "bug") && story.qaReviews.length === 0) || story.qaReviews.some(review => review.status !== "pass");
 
     story.hasFeatureFlagReviews = story.featureFlagReviews.length > 0;
     story.requiresFeatureFlagReview = story.featureFlagReviews.some(review => review.status !== "pass");
