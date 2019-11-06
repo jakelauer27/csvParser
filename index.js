@@ -312,7 +312,7 @@ async function getReleaseInfo() {
     pivotalStories
       .filter(story => story.requiresQAReview)
       .filter(story => !story.hasFeatureFlagReviews || story.flags.some(flag => flag.enabled))
-      .filter(story => !story.isPrototype)
+      .filter(story => story.isNewConsumer || !story.isPrototype)
   );
 
   printListOfStories(
