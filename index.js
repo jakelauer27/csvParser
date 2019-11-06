@@ -225,6 +225,16 @@ function attachFlagInfoToStories(stories) {
   return stories;
 }
 
+function countEstimateSum(stories) {
+  return stories.reduce((a, b) => {
+    if (!isNaN(a.estimate)) {
+      return a.estimate + (b.estimate || 0);
+    } else {
+      return (a || 0) + (b.estimate || 0)
+    }
+  }, 0);
+}
+
 async function getReleaseInfo() {
   const uniquePivotalIds = await getUniquePivotalIds();
 
@@ -250,9 +260,13 @@ async function getReleaseInfo() {
   const chores = pivotalStories.filter(story => story.story_type === "chore");
   const bugs = pivotalStories.filter(story => story.story_type === "bug");
 
-  console.log(`${features.length} Features`);
-  console.log(`${chores.length} Chores`);
-  console.log(`${bugs.length} Bugs`);
+  const featureEstimationSum = countEstimateSum(features);
+  const choreEstimationSum = countEstimateSum(chores);
+  const bugEstimationSum = countEstimateSum(bugs);
+
+  console.log(`${features.length} Feature${features.length === 1 ? '' : 's'} (${featureEstimationSum} point${featureEstimationSum === 1 ? '' : 's'})`);
+  console.log(`${chores.length} Chore${chores.length === 1 ? '' : 's'} (${choreEstimationSum} point${choreEstimationSum === 1 ? '' : 's'})`);
+  console.log(`${bugs.length} Bug${bugs.length === 1 ? '' : 's'} (${bugEstimationSum} point${bugEstimationSum === 1 ? '' : 's'})`);
 
   printListOfStories(
     "Stories to have flags turned on",
