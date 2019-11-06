@@ -258,9 +258,11 @@ async function getReleaseInfo() {
   await attachReviewInfoToStories(pivotalStories);
   await attachRolloutInfoToStories(pivotalStories);
 
-  const features = pivotalStories.filter(story => story.story_type === "feature");
-  const chores = pivotalStories.filter(story => story.story_type === "chore");
-  const bugs = pivotalStories.filter(story => story.story_type === "bug");
+  const storiesOnRelease = pivotalStories.filter(story => !story.transient);
+
+  const features = storiesOnRelease.filter(story => story.story_type === "feature");
+  const chores = storiesOnRelease.filter(story => story.story_type === "chore");
+  const bugs = storiesOnRelease.filter(story => story.story_type === "bug");
 
   const featureEstimationSum = countEstimateSum(features);
   const choreEstimationSum = countEstimateSum(chores);
@@ -279,24 +281,24 @@ async function getReleaseInfo() {
 
   printListOfStories(
     "New consumer stories",
-    pivotalStories.filter(story => story.isNewConsumer)
+    storiesOnRelease.filter(story => story.isNewConsumer)
   );
 
   printListOfStories(
     "Prototype stories",
-    pivotalStories.filter(story => story.isPrototype)
+    storiesOnRelease.filter(story => story.isPrototype)
   );
 
   printListOfStories(
     numberOfStoriesPrinted > 0 ? "Other stories" : "All stories",
-    pivotalStories
+    storiesOnRelease
       .filter(story => !story.isNewConsumer)
       .filter(story => !story.isPrototype)
   );
 
   printListOfStories(
     "Unaccepted stories without a tested feature flag",
-    pivotalStories
+    storiesOnRelease
       .filter(story => story.current_state !== "accepted")
       .filter(story => !story.passesFeatureFlagReview)
   );
@@ -311,7 +313,7 @@ async function getReleaseInfo() {
 
   printListOfStories(
     "Stories requiring QA review",
-    pivotalStories
+    storiesOnRelease
       .filter(story => story.requiresQAReview)
       .filter(story => !story.hasFeatureFlagReviews || story.flags.some(flag => flag.enabled))
       .filter(story => story.isNewConsumer || !story.isPrototype)
@@ -319,7 +321,7 @@ async function getReleaseInfo() {
 
   printListOfStories(
     "Stories requiring design review",
-    pivotalStories
+    storiesOnRelease
       .filter(story => story.requiresDesignReview)
       .filter(story => !story.hasFeatureFlagReviews)
       .filter(story => !story.isPrototype)
@@ -327,12 +329,12 @@ async function getReleaseInfo() {
 
   printListOfStories(
     "Stories requiring feature flag reviews",
-    pivotalStories.filter(story => story.requiresFeatureFlagReview)
+    storiesOnRelease.filter(story => story.requiresFeatureFlagReview)
   );
 
   printListOfStories(
     "Stories with feature flag reviews",
-    pivotalStories.filter(story => story.hasFeatureFlagReviews)
+    storiesOnRelease.filter(story => story.hasFeatureFlagReviews)
   );
 
   console.log(`&nbsp;\n&nbsp;\n&nbsp;\n# Commits with open or no reviews:\n`);
