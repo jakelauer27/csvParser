@@ -7,7 +7,10 @@ let numberOfStoriesPrinted = 0;
 async function getCommitMessages() {
   // const commits = await git.log({from: "756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", to: "c0ddb521a3a25e5f32d1e8010159e33622462525"}); // Flat Earth
   // const commits = await git.log({from: "c0ddb521a3a25e5f32d1e8010159e33622462525", to: "139660b03daad7e9dec5600e89d35faa1a1ade89"}); // Package Discounts
-  const commits = await git.log({from: "139660b03daad7e9dec5600e89d35faa1a1ade89", to: "HEAD"}); // Illuminati
+  // const commits = await git.log({from: "139660b03daad7e9dec5600e89d35faa1a1ade89", to: "bcf2ad304e0fb5fa265e44f8c930781549451a8b"}); // Blocks/Occupancy query optimizations + Jersey client update
+  // const commits = await git.log({from: "bcf2ad304e0fb5fa265e44f8c930781549451a8b", to: "b03c029b1c6de119c88d12f2d1f5ebd99250f3e8"}); // Occupancy logic speed
+  // const commits = await git.log({from: "b03c029b1c6de119c88d12f2d1f5ebd99250f3e8", to: "5b249b8d46150d6d0d411734b999f49c5e1686a7"}); // External error handling + Jersey client flags
+  const commits = await git.log({from: "5b249b8d46150d6d0d411734b999f49c5e1686a7", to: "HEAD"}); // Illuminati
 
   return commits.all.map(commit => commit.message);
 }
