@@ -237,7 +237,7 @@ async function getReleaseInfo() {
     .filter(story => story.kind === "story");
 
   pivotalStories.forEach((story) => {
-    story.isNewConsumer = story.labels.some(label => label.kind === "label" && label.name === "new consumer");
+    story.isNewConsumer = story.labels.some(label => label.kind === "label" && (label.name === "new consumer" || label.name === "consumer"));
     story.isPrototype = story.labels.some(label => label.kind === "label" && label.name === "prototype");
   });
 
