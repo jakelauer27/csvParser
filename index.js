@@ -10,7 +10,11 @@ async function getCommitMessages() {
   // const commits = await git.log({from: "139660b03daad7e9dec5600e89d35faa1a1ade89", to: "bcf2ad304e0fb5fa265e44f8c930781549451a8b"}); // Blocks/Occupancy query optimizations + Jersey client update
   // const commits = await git.log({from: "bcf2ad304e0fb5fa265e44f8c930781549451a8b", to: "b03c029b1c6de119c88d12f2d1f5ebd99250f3e8"}); // Occupancy logic speed
   // const commits = await git.log({from: "b03c029b1c6de119c88d12f2d1f5ebd99250f3e8", to: "5b249b8d46150d6d0d411734b999f49c5e1686a7"}); // External error handling + Jersey client flags
-  const commits = await git.log({from: "5b249b8d46150d6d0d411734b999f49c5e1686a7", to: "HEAD"}); // Illuminati
+  // const commits = await git.log({from: "5b249b8d46150d6d0d411734b999f49c5e1686a7", to: "1f7634d93f7c13ae8666db83190b6fb949126b96"}); // Illuminati
+  // const commits = await git.log({from: "1f7634d93f7c13ae8666db83190b6fb949126b96", to: "a7f6c37989a4a8983d3aaddbb71fac66c9d32f46"}); // Terms of service link hotfix
+  // const commits = await git.log({from: "a7f6c37989a4a8983d3aaddbb71fac66c9d32f46", to: "e175866494904a92ef546e081d8affeb9be94d04"}); // Websocket fix
+  // const commits = await git.log({from: "e175866494904a92ef546e081d8affeb9be94d04", to: "b71263520f521683dc448abb1960d47944669692"}); // Map zoom fix
+  const commits = await git.log({from: "b71263520f521683dc448abb1960d47944669692", to: "HEAD"}); // Antarctica
 
   return commits.all.map(commit => commit.message);
 }
