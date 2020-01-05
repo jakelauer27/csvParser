@@ -14,7 +14,9 @@ async function getCommitMessages() {
   // const commits = await git.log({from: "1f7634d93f7c13ae8666db83190b6fb949126b96", to: "a7f6c37989a4a8983d3aaddbb71fac66c9d32f46"}); // Terms of service link hotfix
   // const commits = await git.log({from: "a7f6c37989a4a8983d3aaddbb71fac66c9d32f46", to: "e175866494904a92ef546e081d8affeb9be94d04"}); // Websocket fix
   // const commits = await git.log({from: "e175866494904a92ef546e081d8affeb9be94d04", to: "b71263520f521683dc448abb1960d47944669692"}); // Map zoom fix
-  const commits = await git.log({from: "b71263520f521683dc448abb1960d47944669692", to: "HEAD"}); // Antarctica
+  // const commits = await git.log({from: "b71263520f521683dc448abb1960d47944669692", to: "985ee57deb431524113d0dc530581cb37d6993d7"}); // Map panning + redirect fix
+  // const commits = await git.log({from: "985ee57deb431524113d0dc530581cb37d6993d7", to: "086623e584a4a90a5f98de1e3f8867f55a6c0b41"}); // www redirect fix
+  const commits = await git.log({from: "086623e584a4a90a5f98de1e3f8867f55a6c0b41", to: "HEAD"}); // Antarctica
 
   return commits.all.map(commit => commit.message);
 }
