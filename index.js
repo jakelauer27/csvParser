@@ -16,7 +16,8 @@ async function getCommitMessages() {
   // const commits = await git.log({from: "e175866494904a92ef546e081d8affeb9be94d04", to: "b71263520f521683dc448abb1960d47944669692"}); // Map zoom fix
   // const commits = await git.log({from: "b71263520f521683dc448abb1960d47944669692", to: "985ee57deb431524113d0dc530581cb37d6993d7"}); // Map panning + redirect fix
   // const commits = await git.log({from: "985ee57deb431524113d0dc530581cb37d6993d7", to: "086623e584a4a90a5f98de1e3f8867f55a6c0b41"}); // www redirect fix
-  const commits = await git.log({from: "086623e584a4a90a5f98de1e3f8867f55a6c0b41", to: "HEAD"}); // Antarctica
+  // const commits = await git.log({from: "086623e584a4a90a5f98de1e3f8867f55a6c0b41", to: "83fd5373f86846f9cdf137593921ddc29703deff"}); // More specific redirects + aggregator copyright year
+  const commits = await git.log({from: "83fd5373f86846f9cdf137593921ddc29703deff", to: "HEAD"}); // Antarctica
 
   return commits.all.map(commit => commit.message);
 }
