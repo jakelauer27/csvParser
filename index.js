@@ -1,4 +1,4 @@
-const git = require("simple-git/promise")("../aggregator");
+const git = require("simple-git/promise")("../aggregator-release");
 const request = require("request");
 const Rox = require("rox-node");
 
