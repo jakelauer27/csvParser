@@ -4,6 +4,10 @@ const Rox = require("rox-node");
 
 let numberOfStoriesPrinted = 0;
 
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function getCommitMessages() {
   // const commits = await git.log({from: "756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", to: "c0ddb521a3a25e5f32d1e8010159e33622462525"}); // Flat Earth
   // const commits = await git.log({from: "c0ddb521a3a25e5f32d1e8010159e33622462525", to: "139660b03daad7e9dec5600e89d35faa1a1ade89"}); // Package Discounts
@@ -163,7 +167,9 @@ function printListOfStories(header, stories, options = {}) {
 }
 
 async function attachReviewInfoToStories(stories) {
-  return await Promise.all(stories.map(async (story) => {
+  return await Promise.all(stories.map(async (story, i) => {
+    await sleep(1000 * i);
+
     story.reviews = await pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/projects/${story.project_id}/stories/${story.id}/reviews`);
 
     if (story.reviews && Array.isArray(story.reviews)) {
