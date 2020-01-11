@@ -178,8 +178,8 @@ async function attachReviewInfoToStories(stories) {
       story.reviews = [];
     }
 
-    story.qaReviews = story.reviews.filter(review => review.review_type_id === 7602 || review.review_type_id === 4628939);
     story.codeReviews = story.reviews.filter(review => review.review_type_id === 7604 || review.review_type_id === 4628937 || review.review_type_id === 4165914);
+    story.qaReviews = story.reviews.filter(review => review.review_type_id === 7602 || review.review_type_id === 4628939 || review.review_type_id === 4165912);
     story.designReviews = story.reviews.filter(review => review.review_type_id === 7603);
     story.featureFlagReviews = story.reviews.filter(review => review.review_type_id === 5527847);
 
