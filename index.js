@@ -323,7 +323,7 @@ async function getReleaseInfo() {
 
   pivotalStories.forEach((story) => {
     story.isNewConsumer = story.labels.some(label => label.kind === "label" && (label.name === "new consumer" || label.name === "consumer"));
-    story.isPrototype = story.labels.some(label => label.kind === "label" && label.name === "prototype");
+    story.isPrototype = story.labels.some(label => label.kind === "label" && (label.name === "prototype" || label.name === "aggregator"));
   });
 
   await attachBlockersToStories(pivotalStories);
