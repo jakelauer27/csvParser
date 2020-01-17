@@ -22,7 +22,8 @@ async function getCommitMessages() {
   // const commits = await git.log({from: "985ee57deb431524113d0dc530581cb37d6993d7", to: "086623e584a4a90a5f98de1e3f8867f55a6c0b41"}); // www redirect fix
   // const commits = await git.log({from: "086623e584a4a90a5f98de1e3f8867f55a6c0b41", to: "83fd5373f86846f9cdf137593921ddc29703deff"}); // More specific redirects + aggregator copyright year
   // const commits = await git.log({from: "83fd5373f86846f9cdf137593921ddc29703deff", to: "77b72ade5641e494d880b9b8d152fdcd92eee7c9"}); // Antarctica
-  const commits = await git.log({from: "77b72ade5641e494d880b9b8d152fdcd92eee7c9", to: "HEAD"}); // Antarctica cookie prefix - staging db changes
+  // const commits = await git.log({from: "77b72ade5641e494d880b9b8d152fdcd92eee7c9", to: "045096aac4857f54911631144a2e5d36c5e814e4"}); // Antarctica cookie prefix - staging db changes
+  const commits = await git.log({from: "045096aac4857f54911631144a2e5d36c5e814e4", to: "HEAD"}); // Aggregator V1
 
   return commits.all.map(commit => commit.message);
 }
@@ -169,7 +170,7 @@ function printListOfStories(header, stories, options = {}) {
 
 async function attachReviewInfoToStories(stories) {
   return await Promise.all(stories.map(async (story, i) => {
-    await sleep(1000 * i);
+    // await sleep(1000 * i);
 
     story.reviews = await pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/projects/${story.project_id}/stories/${story.id}/reviews`);
 
