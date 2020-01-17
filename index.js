@@ -77,6 +77,10 @@ function getAllUnclosedReviewsUpsourceUrl(pivotalIds) {
   return getUpsourceUrl(`branch: master and not #{closed review} and (${pivotalIds.join(" or ")})`);
 }
 
+function getAllUnattachedCommitsUpsourceUrl() {
+  return getUpsourceUrl(`branch: master and not #{closed review} and not #{open review}`);
+}
+
 function getStoryReviewsUpsourceUrl(story) {
   return getUpsourceUrl(`branch: master and ${story.id}`);
 }
@@ -429,6 +433,7 @@ async function getReleaseInfo() {
 
   console.log(`&nbsp;\n&nbsp;\n&nbsp;\n# Upsource:\n`);
   console.log(`[Commits with open or no reviews](${getAllUnclosedReviewsUpsourceUrl(uniquePivotalIds)})`);
+  console.log(`[Commits with no attached review](${getAllUnattachedCommitsUpsourceUrl()})`);
 }
 
 getReleaseInfo().then(() => {
