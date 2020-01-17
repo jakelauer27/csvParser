@@ -427,8 +427,8 @@ async function getReleaseInfo() {
     storiesOnRelease.filter(story => story.hasFeatureFlagReviews)
   );
 
-  console.log(`&nbsp;\n&nbsp;\n&nbsp;\n# Commits with open or no reviews:\n`);
-  console.log(`[View commits in upsource](${getAllUnclosedReviewsUpsourceUrl(uniquePivotalIds)})`);
+  console.log(`&nbsp;\n&nbsp;\n&nbsp;\n# Upsource:\n`);
+  console.log(`[Commits with open or no reviews](${getAllUnclosedReviewsUpsourceUrl(uniquePivotalIds)})`);
 }
 
 getReleaseInfo().then(() => {
