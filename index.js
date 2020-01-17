@@ -374,12 +374,12 @@ async function getReleaseInfo() {
   );
 
   printListOfStories(
-    "New consumer stories",
+    "Consumer stories",
     storiesOnRelease.filter(story => story.isNewConsumer)
   );
 
   printListOfStories(
-    "Prototype stories",
+    "Aggregator stories",
     storiesOnRelease.filter(story => story.isPrototype)
   );
 
