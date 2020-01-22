@@ -180,7 +180,7 @@ function printListOfStories(header, stories, options = {}) {
 
 async function attachReviewInfoToStories(stories) {
   return await Promise.all(stories.map(async (story, i) => {
-    // await sleep(1000 * i);
+    // await sleep(5000 * i);
 
     story.reviews = await pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/projects/${story.project_id}/stories/${story.id}/reviews`);
 
