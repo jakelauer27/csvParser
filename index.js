@@ -22,8 +22,14 @@ async function getCommitMessages() {
   // const commits = await git.log({from: "985ee57deb431524113d0dc530581cb37d6993d7", to: "086623e584a4a90a5f98de1e3f8867f55a6c0b41"}); // www redirect fix
   // const commits = await git.log({from: "086623e584a4a90a5f98de1e3f8867f55a6c0b41", to: "83fd5373f86846f9cdf137593921ddc29703deff"}); // More specific redirects + aggregator copyright year
   // const commits = await git.log({from: "83fd5373f86846f9cdf137593921ddc29703deff", to: "77b72ade5641e494d880b9b8d152fdcd92eee7c9"}); // Antarctica
-  // const commits = await git.log({from: "77b72ade5641e494d880b9b8d152fdcd92eee7c9", to: "045096aac4857f54911631144a2e5d36c5e814e4"}); // Antarctica cookie prefix - staging db changes
-  const commits = await git.log({from: "045096aac4857f54911631144a2e5d36c5e814e4", to: "HEAD"}); // Aggregator V1
+  // const commits = await git.log({from: "77b72ade5641e494d880b9b8d152fdcd92eee7c9", to: "045096aac4857f54911631144a2e5d36c5e814e4"}); // Antarctica cofokie prefix - staging db changes
+  // const commits = await git.log({from: "045096aac4857f54911631144a2e5d36c5e814e4", to: "407abbb073853fd1bfd04206ba846ab042c4daed"}); // Aggregator V1
+  // const commits = await git.log({from: "407abbb073853fd1bfd04206ba846ab042c4daed", to: "d76e034dc30f18ed894d6de5744d30d6f3f36ea8"}); // Fluoride
+  // const commits = await git.log({from: "d76e034dc30f18ed894d6de5744d30d6f3f36ea8", to: "65f660ec990683ad250463a8b45e138ea5a32f19"}); // Aggregator Aggregator
+  // const commits = await git.log({from: "65f660ec990683ad250463a8b45e138ea5a32f19", to: "45b588fb551d6e787a917766d521144b77d1eb24"}); // Immortal Keanu Reeves
+  // const commits = await git.log({from: "45b588fb551d6e787a917766d521144b77d1eb24", to: "bedc3bc614bd67a148af8be9537115476fa06d8c"}); // Lizard People
+  // const commits = await git.log({from: "bedc3bc614bd67a148af8be9537115476fa06d8c", to: "f79648211abdc3cd29cb1523d45ec72512270734"}); // Birds Aren't Real
+  const commits = await git.log({from: "f79648211abdc3cd29cb1523d45ec72512270734", to: "HEAD"}); // Black Helicopters
 
   return commits.all.map(commit => commit.message);
 }
