@@ -29,7 +29,8 @@ async function getCommitMessages() {
   // const commits = await git.log({from: "65f660ec990683ad250463a8b45e138ea5a32f19", to: "45b588fb551d6e787a917766d521144b77d1eb24"}); // Immortal Keanu Reeves
   // const commits = await git.log({from: "45b588fb551d6e787a917766d521144b77d1eb24", to: "bedc3bc614bd67a148af8be9537115476fa06d8c"}); // Lizard People
   // const commits = await git.log({from: "bedc3bc614bd67a148af8be9537115476fa06d8c", to: "f79648211abdc3cd29cb1523d45ec72512270734"}); // Birds Aren't Real
-  const commits = await git.log({from: "f79648211abdc3cd29cb1523d45ec72512270734", to: "HEAD"}); // Black Helicopters
+  // const commits = await git.log({from: "f79648211abdc3cd29cb1523d45ec72512270734", to: "5ebee4e23f1d573dd32091e2f25fcc456ca1154e"}); // Black Helicopters
+  const commits = await git.log({from: "5ebee4e23f1d573dd32091e2f25fcc456ca1154e", to: "HEAD"}); // Mandela Effect
 
   return commits.all.map(commit => commit.message);
 }
