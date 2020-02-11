@@ -32,7 +32,11 @@ async function getCommitMessages() {
   // const commits = await git.log({from: "f79648211abdc3cd29cb1523d45ec72512270734", to: "5ebee4e23f1d573dd32091e2f25fcc456ca1154e"}); // Black Helicopters
   // const commits = await git.log({from: "5ebee4e23f1d573dd32091e2f25fcc456ca1154e", to: "2b144de198c83cf61b072d35b83ddf420cae24aa"}); // Mandela Effect
   // const commits = await git.log({from: "2b144de198c83cf61b072d35b83ddf420cae24aa", to: "dc2134321a19c42f0bfe341f76656f8651cae888"}); // 5G
-  const commits = await git.log({from: "dc2134321a19c42f0bfe341f76656f8651cae888", to: "HEAD"}); // Accessibility
+  // const commits = await git.log({from: "dc2134321a19c42f0bfe341f76656f8651cae888", to: "33d0ffcaac6d3f502f13522e6cdda2658f407f9a"}); // Accessibility
+  // const commits = await git.log({from: "33d0ffcaac6d3f502f13522e6cdda2658f407f9a", to: "8d45b1ad91a08d737a5b0d5662a2bb5070413230"}); // The Kraken
+  // const commits = await git.log({from: "8d45b1ad91a08d737a5b0d5662a2bb5070413230", to: "d6ecb0573154f36cccb4f24cd3a3683fae764976"}); // The Kraken HF2
+  // const commits = await git.log({from: "d6ecb0573154f36cccb4f24cd3a3683fae764976", to: "96da4134f1d5e340307df5b5133a77b42ea833cf"}); // The Kraken HF3
+  const commits = await git.log({from: "96da4134f1d5e340307df5b5133a77b42ea833cf", to: "HEAD"}); // Deep State
 
   return commits.all.map(commit => commit.message);
 }
