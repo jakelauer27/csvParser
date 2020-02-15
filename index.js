@@ -405,13 +405,6 @@ async function getReleaseInfo() {
   );
 
   printListOfStories(
-    "Unaccepted stories without a tested feature flag",
-    storiesOnRelease
-      .filter(story => story.current_state !== "accepted")
-      .filter(story => !story.passesFeatureFlagReview)
-  );
-
-  printListOfStories(
     "Stories requiring code review",
     storiesOnRelease.filter(story => story.requiresCodeReview),
     {
@@ -437,11 +430,6 @@ async function getReleaseInfo() {
   printListOfStories(
     "Stories requiring feature flag reviews",
     storiesOnRelease.filter(story => story.requiresFeatureFlagReview)
-  );
-
-  printListOfStories(
-    "Stories with feature flag reviews",
-    storiesOnRelease.filter(story => story.hasFeatureFlagReviews)
   );
 
   console.log(`&nbsp;\n&nbsp;\n&nbsp;\n# Upsource:\n`);
