@@ -36,7 +36,8 @@ async function getCommitMessages() {
   // const commits = await git.log({from: "33d0ffcaac6d3f502f13522e6cdda2658f407f9a", to: "8d45b1ad91a08d737a5b0d5662a2bb5070413230"}); // The Kraken
   // const commits = await git.log({from: "8d45b1ad91a08d737a5b0d5662a2bb5070413230", to: "d6ecb0573154f36cccb4f24cd3a3683fae764976"}); // The Kraken HF2
   // const commits = await git.log({from: "d6ecb0573154f36cccb4f24cd3a3683fae764976", to: "96da4134f1d5e340307df5b5133a77b42ea833cf"}); // The Kraken HF3
-  const commits = await git.log({from: "96da4134f1d5e340307df5b5133a77b42ea833cf", to: "HEAD"}); // Deep State
+  // const commits = await git.log({from: "96da4134f1d5e340307df5b5133a77b42ea833cf", to: "5d9faabbbf5ecabe2f16f512ae8675533a2c9029"}); // www request origin hotfix
+  const commits = await git.log({from: "5d9faabbbf5ecabe2f16f512ae8675533a2c9029", to: "HEAD"}); // Deep State
 
   return commits.all.map(commit => commit.message);
 }
