@@ -9,37 +9,65 @@ async function sleep(ms) {
 }
 
 async function getCommitMessages() {
-  // const commits = await git.log({from: "756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", to: "c0ddb521a3a25e5f32d1e8010159e33622462525"}); // Flat Earth
-  // const commits = await git.log({from: "c0ddb521a3a25e5f32d1e8010159e33622462525", to: "139660b03daad7e9dec5600e89d35faa1a1ade89"}); // Package Discounts
-  // const commits = await git.log({from: "139660b03daad7e9dec5600e89d35faa1a1ade89", to: "bcf2ad304e0fb5fa265e44f8c930781549451a8b"}); // Blocks/Occupancy query optimizations + Jersey client update
-  // const commits = await git.log({from: "bcf2ad304e0fb5fa265e44f8c930781549451a8b", to: "b03c029b1c6de119c88d12f2d1f5ebd99250f3e8"}); // Occupancy logic speed
-  // const commits = await git.log({from: "b03c029b1c6de119c88d12f2d1f5ebd99250f3e8", to: "5b249b8d46150d6d0d411734b999f49c5e1686a7"}); // External error handling + Jersey client flags
-  // const commits = await git.log({from: "5b249b8d46150d6d0d411734b999f49c5e1686a7", to: "1f7634d93f7c13ae8666db83190b6fb949126b96"}); // Illuminati
-  // const commits = await git.log({from: "1f7634d93f7c13ae8666db83190b6fb949126b96", to: "a7f6c37989a4a8983d3aaddbb71fac66c9d32f46"}); // Terms of service link hotfix
-  // const commits = await git.log({from: "a7f6c37989a4a8983d3aaddbb71fac66c9d32f46", to: "e175866494904a92ef546e081d8affeb9be94d04"}); // Websocket fix
-  // const commits = await git.log({from: "e175866494904a92ef546e081d8affeb9be94d04", to: "b71263520f521683dc448abb1960d47944669692"}); // Map zoom fix
-  // const commits = await git.log({from: "b71263520f521683dc448abb1960d47944669692", to: "985ee57deb431524113d0dc530581cb37d6993d7"}); // Map panning + redirect fix
-  // const commits = await git.log({from: "985ee57deb431524113d0dc530581cb37d6993d7", to: "086623e584a4a90a5f98de1e3f8867f55a6c0b41"}); // www redirect fix
-  // const commits = await git.log({from: "086623e584a4a90a5f98de1e3f8867f55a6c0b41", to: "83fd5373f86846f9cdf137593921ddc29703deff"}); // More specific redirects + aggregator copyright year
-  // const commits = await git.log({from: "83fd5373f86846f9cdf137593921ddc29703deff", to: "77b72ade5641e494d880b9b8d152fdcd92eee7c9"}); // Antarctica
-  // const commits = await git.log({from: "77b72ade5641e494d880b9b8d152fdcd92eee7c9", to: "045096aac4857f54911631144a2e5d36c5e814e4"}); // Antarctica cofokie prefix - staging db changes
-  // const commits = await git.log({from: "045096aac4857f54911631144a2e5d36c5e814e4", to: "407abbb073853fd1bfd04206ba846ab042c4daed"}); // Aggregator V1
-  // const commits = await git.log({from: "407abbb073853fd1bfd04206ba846ab042c4daed", to: "d76e034dc30f18ed894d6de5744d30d6f3f36ea8"}); // Fluoride
-  // const commits = await git.log({from: "d76e034dc30f18ed894d6de5744d30d6f3f36ea8", to: "65f660ec990683ad250463a8b45e138ea5a32f19"}); // Aggregator Aggregator
-  // const commits = await git.log({from: "65f660ec990683ad250463a8b45e138ea5a32f19", to: "45b588fb551d6e787a917766d521144b77d1eb24"}); // Immortal Keanu Reeves
-  // const commits = await git.log({from: "45b588fb551d6e787a917766d521144b77d1eb24", to: "bedc3bc614bd67a148af8be9537115476fa06d8c"}); // Lizard People
-  // const commits = await git.log({from: "bedc3bc614bd67a148af8be9537115476fa06d8c", to: "f79648211abdc3cd29cb1523d45ec72512270734"}); // Birds Aren't Real
-  // const commits = await git.log({from: "f79648211abdc3cd29cb1523d45ec72512270734", to: "5ebee4e23f1d573dd32091e2f25fcc456ca1154e"}); // Black Helicopters
-  // const commits = await git.log({from: "5ebee4e23f1d573dd32091e2f25fcc456ca1154e", to: "2b144de198c83cf61b072d35b83ddf420cae24aa"}); // Mandela Effect
-  // const commits = await git.log({from: "2b144de198c83cf61b072d35b83ddf420cae24aa", to: "dc2134321a19c42f0bfe341f76656f8651cae888"}); // 5G
-  // const commits = await git.log({from: "dc2134321a19c42f0bfe341f76656f8651cae888", to: "33d0ffcaac6d3f502f13522e6cdda2658f407f9a"}); // Accessibility
-  // const commits = await git.log({from: "33d0ffcaac6d3f502f13522e6cdda2658f407f9a", to: "8d45b1ad91a08d737a5b0d5662a2bb5070413230"}); // The Kraken
-  // const commits = await git.log({from: "8d45b1ad91a08d737a5b0d5662a2bb5070413230", to: "d6ecb0573154f36cccb4f24cd3a3683fae764976"}); // The Kraken HF2
-  // const commits = await git.log({from: "d6ecb0573154f36cccb4f24cd3a3683fae764976", to: "96da4134f1d5e340307df5b5133a77b42ea833cf"}); // The Kraken HF3
-  // const commits = await git.log({from: "96da4134f1d5e340307df5b5133a77b42ea833cf", to: "5d9faabbbf5ecabe2f16f512ae8675533a2c9029"}); // www request origin hotfix
-  const commits = await git.log({from: "5d9faabbbf5ecabe2f16f512ae8675533a2c9029", to: "HEAD"}); // Deep State
+  const previousReleaseCommitLogs = [
+    await git.log({from: "756cbfd0cbb5fd1b0b4ad3517227b59c483578ae", to: "c0ddb521a3a25e5f32d1e8010159e33622462525"}), // Flat Earth
+    await git.log({from: "c0ddb521a3a25e5f32d1e8010159e33622462525", to: "139660b03daad7e9dec5600e89d35faa1a1ade89"}), // Package Discounts
+    await git.log({from: "139660b03daad7e9dec5600e89d35faa1a1ade89", to: "bcf2ad304e0fb5fa265e44f8c930781549451a8b"}), // Blocks/Occupancy query optimizations + Jersey client update
+    await git.log({from: "bcf2ad304e0fb5fa265e44f8c930781549451a8b", to: "b03c029b1c6de119c88d12f2d1f5ebd99250f3e8"}), // Occupancy logic speed
+    await git.log({from: "b03c029b1c6de119c88d12f2d1f5ebd99250f3e8", to: "5b249b8d46150d6d0d411734b999f49c5e1686a7"}), // External error handling + Jersey client flags
+    await git.log({from: "5b249b8d46150d6d0d411734b999f49c5e1686a7", to: "1f7634d93f7c13ae8666db83190b6fb949126b96"}), // Illuminati
+    await git.log({from: "1f7634d93f7c13ae8666db83190b6fb949126b96", to: "a7f6c37989a4a8983d3aaddbb71fac66c9d32f46"}), // Terms of service link hotfix
+    await git.log({from: "a7f6c37989a4a8983d3aaddbb71fac66c9d32f46", to: "e175866494904a92ef546e081d8affeb9be94d04"}), // Websocket fix
+    await git.log({from: "e175866494904a92ef546e081d8affeb9be94d04", to: "b71263520f521683dc448abb1960d47944669692"}), // Map zoom fix
+    await git.log({from: "b71263520f521683dc448abb1960d47944669692", to: "985ee57deb431524113d0dc530581cb37d6993d7"}), // Map panning + redirect fix
+    await git.log({from: "985ee57deb431524113d0dc530581cb37d6993d7", to: "086623e584a4a90a5f98de1e3f8867f55a6c0b41"}), // www redirect fix
+    await git.log({from: "086623e584a4a90a5f98de1e3f8867f55a6c0b41", to: "83fd5373f86846f9cdf137593921ddc29703deff"}), // More specific redirects + aggregator copyright year
+    await git.log({from: "83fd5373f86846f9cdf137593921ddc29703deff", to: "77b72ade5641e494d880b9b8d152fdcd92eee7c9"}), // Antarctica
+    await git.log({from: "77b72ade5641e494d880b9b8d152fdcd92eee7c9", to: "045096aac4857f54911631144a2e5d36c5e814e4"}), // Antarctica cofokie prefix - staging db changes
+    await git.log({from: "045096aac4857f54911631144a2e5d36c5e814e4", to: "407abbb073853fd1bfd04206ba846ab042c4daed"}), // Aggregator V1
+    await git.log({from: "407abbb073853fd1bfd04206ba846ab042c4daed", to: "d76e034dc30f18ed894d6de5744d30d6f3f36ea8"}), // Fluoride
+    await git.log({from: "d76e034dc30f18ed894d6de5744d30d6f3f36ea8", to: "65f660ec990683ad250463a8b45e138ea5a32f19"}), // Aggregator Aggregator
+    await git.log({from: "65f660ec990683ad250463a8b45e138ea5a32f19", to: "45b588fb551d6e787a917766d521144b77d1eb24"}), // Immortal Keanu Reeves
+    await git.log({from: "45b588fb551d6e787a917766d521144b77d1eb24", to: "bedc3bc614bd67a148af8be9537115476fa06d8c"}), // Lizard People
+    await git.log({from: "bedc3bc614bd67a148af8be9537115476fa06d8c", to: "f79648211abdc3cd29cb1523d45ec72512270734"}), // Birds Aren't Real
+    await git.log({from: "f79648211abdc3cd29cb1523d45ec72512270734", to: "5ebee4e23f1d573dd32091e2f25fcc456ca1154e"}), // Black Helicopters
+    await git.log({from: "5ebee4e23f1d573dd32091e2f25fcc456ca1154e", to: "2b144de198c83cf61b072d35b83ddf420cae24aa"}), // Mandela Effect
+    await git.log({from: "2b144de198c83cf61b072d35b83ddf420cae24aa", to: "dc2134321a19c42f0bfe341f76656f8651cae888"}), // 5G
+    await git.log({from: "dc2134321a19c42f0bfe341f76656f8651cae888", to: "33d0ffcaac6d3f502f13522e6cdda2658f407f9a"}), // Accessibility
+    await git.log({from: "dc2134321a19c42f0bfe341f76656f8651cae888", to: "33d0ffcaac6d3f502f13522e6cdda2658f407f9a"}), // Accessibility
+    await git.log({from: "33d0ffcaac6d3f502f13522e6cdda2658f407f9a", to: "8d45b1ad91a08d737a5b0d5662a2bb5070413230"}), // The Kraken
+    await git.log({from: "8d45b1ad91a08d737a5b0d5662a2bb5070413230", to: "d6ecb0573154f36cccb4f24cd3a3683fae764976"}), // The Kraken HF2
+    await git.log({from: "d6ecb0573154f36cccb4f24cd3a3683fae764976", to: "96da4134f1d5e340307df5b5133a77b42ea833cf"}), // The Kraken HF3
+    await git.log({from: "96da4134f1d5e340307df5b5133a77b42ea833cf", to: "5d9faabbbf5ecabe2f16f512ae8675533a2c9029"}), // www request origin hotfix
+  ];
 
-  return commits.all.map(commit => commit.message);
+  const releaseCommits = await git.log({from: "5d9faabbbf5ecabe2f16f512ae8675533a2c9029", to: "HEAD"}); // Deep State
+
+  const allPreviousReleaseCommits = previousReleaseCommitLogs.flatMap(commits => commits.all);
+  const allPreviousReleaseCommitsMap = {};
+
+  allPreviousReleaseCommits.forEach((commit) => {
+    allPreviousReleaseCommitsMap[commit.date + commit.message] = true;
+  });
+
+  const duplicateCommits = [];
+  const dedupedCommits = releaseCommits.all.filter((commit) => {
+    if (allPreviousReleaseCommitsMap[commit.date + commit.message]) {
+      duplicateCommits.push(commit);
+
+      return false;
+    } else {
+      return true;
+    }
+  });
+
+  if (duplicateCommits.length > 0) {
+    console.warn("Removing some duplicate commits:");
+    console.warn(duplicateCommits.map(commit => commit.message).join("\n"));
+    console.warn("\n\n\n\n");
+  }
+
+  return dedupedCommits.map(commit => commit.message);
 }
 
 async function getUniquePivotalIds() {
@@ -385,6 +413,16 @@ async function getReleaseInfo() {
 
         return storiesWithSameFlag.every(s => s.current_state === "accepted");
       })
+  );
+
+  printListOfStories(
+    "New Features",
+    features.filter(story => story.current_state === "accepted")
+  );
+
+  printListOfStories(
+    "New Fixes",
+    bugs.filter(story => story.current_state === "accepted")
   );
 
   printListOfStories(
