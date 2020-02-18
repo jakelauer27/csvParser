@@ -366,9 +366,15 @@ async function getReleaseInfo() {
     return pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/stories/${id}`);
   }));
 
+  const closedOutStories = pivotalStoriesIncludingNull
+    .filter(story => story !== null)
+    .filter(story => story.kind === "story")
+    .filter(story => story.labels.some(label => label.kind === "label" && label.name === "close out and carry over"));
+
   const pivotalStories = pivotalStoriesIncludingNull
     .filter(story => story !== null)
-    .filter(story => story.kind === "story");
+    .filter(story => story.kind === "story")
+    .filter(story => !story.labels.some(label => label.kind === "label" && label.name === "close out and carry over"));
 
   pivotalStories.forEach((story) => {
     story.isNewConsumer = story.labels.some(label => label.kind === "label" && (label.name === "new consumer" || label.name === "consumer"));
@@ -424,6 +430,11 @@ async function getReleaseInfo() {
   printListOfStories(
     "New Fixes",
     bugs.filter(story => story.current_state === "accepted")
+  );
+
+  printListOfStories(
+    "Carry-over stories",
+    closedOutStories
   );
 
   printListOfStories(
