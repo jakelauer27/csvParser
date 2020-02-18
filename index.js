@@ -39,9 +39,10 @@ async function getCommitMessages() {
     await git.log({from: "8d45b1ad91a08d737a5b0d5662a2bb5070413230", to: "d6ecb0573154f36cccb4f24cd3a3683fae764976"}), // The Kraken HF2
     await git.log({from: "d6ecb0573154f36cccb4f24cd3a3683fae764976", to: "96da4134f1d5e340307df5b5133a77b42ea833cf"}), // The Kraken HF3
     await git.log({from: "96da4134f1d5e340307df5b5133a77b42ea833cf", to: "5d9faabbbf5ecabe2f16f512ae8675533a2c9029"}), // www request origin hotfix
+    await git.log({from: "5d9faabbbf5ecabe2f16f512ae8675533a2c9029", to: "3933017eb7ea811ff05866b2e620f73e4ea1e4c2"}), // Deep State
   ];
 
-  const releaseCommits = await git.log({from: "5d9faabbbf5ecabe2f16f512ae8675533a2c9029", to: "HEAD"}); // Deep State
+  const releaseCommits = await git.log({from: "3933017eb7ea811ff05866b2e620f73e4ea1e4c2", to: "HEAD"}); // Mud Floods
 
   const allPreviousReleaseCommits = previousReleaseCommitLogs.flatMap(commits => commits.all);
   const allPreviousReleaseCommitsMap = {};
