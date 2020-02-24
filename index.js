@@ -361,6 +361,10 @@ function countEstimateSum(stories) {
   }, 0);
 }
 
+function storyIsClosedOutAndCarriedOver(story) {
+  return story.labels.some(label => label.kind === "label" && label.name === "close out and carry over");
+}
+
 function storyIsConsumer(story) {
   return story.labels.some(label => label.kind === "label" && (label.name === "new consumer" || label.name === "consumer"));
 }
@@ -380,15 +384,12 @@ async function getReleaseInfo() {
     return pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/stories/${id}`);
   }));
 
-  const closedOutStories = pivotalStoriesIncludingNull
+  const allPivotalStories = pivotalStoriesIncludingNull
     .filter(story => story !== null)
-    .filter(story => story.kind === "story")
-    .filter(story => story.labels.some(label => label.kind === "label" && label.name === "close out and carry over"));
+    .filter(story => story.kind === "story");
 
-  const pivotalStories = pivotalStoriesIncludingNull
-    .filter(story => story !== null)
-    .filter(story => story.kind === "story")
-    .filter(story => !story.labels.some(label => label.kind === "label" && label.name === "close out and carry over"));
+  const closedOutStories = allPivotalStories.filter(story => storyIsClosedOutAndCarriedOver(story));
+  const pivotalStories = allPivotalStories.filter(story => !storyIsClosedOutAndCarriedOver(story));
 
   pivotalStories.forEach((story) => {
     story.isConsumer = storyIsConsumer(story);
