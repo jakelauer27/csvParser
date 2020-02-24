@@ -2,9 +2,11 @@ const git = require("simple-git/promise")("../aggregator-release");
 const request = require("request");
 const Rox = require("rox-node");
 
+const aggregatorProjectId = 2145699;
 const roxApiKey = "5be1d296b38fed12b215194d";
 
 let numberOfStoriesPrinted = 0;
+let previousReleaseDate = null;
 
 async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -45,6 +47,9 @@ async function getCommitMessages() {
   ];
 
   const releaseCommits = await git.log({from: "3933017eb7ea811ff05866b2e620f73e4ea1e4c2", to: "HEAD"}); // Mud Floods
+  const lastRelease = previousReleaseCommitLogs[previousReleaseCommitLogs.length - 1];
+
+  previousReleaseDate = Date.parse(lastRelease.latest.date);
 
   const allPreviousReleaseCommits = previousReleaseCommitLogs.flatMap(commits => commits.all);
   const allPreviousReleaseCommitsMap = {};
@@ -132,6 +137,10 @@ function getStoryReviewsUpsourceUrl(story) {
 
 function getUpsourceUrl(query) {
   return `https://upsource.campspot.com/consumer?query=${encodeURIComponent(query).replace(/\(/, "%28").replace(/\)/, "%29")}`;
+}
+
+async function getStoriesAcceptedAfterPreviousRelease() {
+  return await pivotalApiGetRequest(`https://www.pivotaltracker.com/services/v5/projects/${aggregatorProjectId}/stories?accepted_after=${previousReleaseDate.valueOf()}`);
 }
 
 async function pivotalApiGetRequest(url) {
@@ -387,6 +396,16 @@ async function getReleaseInfo() {
   const allPivotalStories = pivotalStoriesIncludingNull
     .filter(story => story !== null)
     .filter(story => story.kind === "story");
+
+  const storiesAcceptedAfterPreviousRelease = await getStoriesAcceptedAfterPreviousRelease();
+
+  storiesAcceptedAfterPreviousRelease
+    .filter(story => allPivotalStories.every(s => s.id !== story.id))
+    .forEach((story) => {
+      story.isFromPreviousRelease = true;
+
+      allPivotalStories.push(story);
+    });
 
   const closedOutStories = allPivotalStories.filter(story => storyIsClosedOutAndCarriedOver(story));
   const pivotalStories = allPivotalStories.filter(story => !storyIsClosedOutAndCarriedOver(story));
