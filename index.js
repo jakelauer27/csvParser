@@ -2,6 +2,8 @@ const git = require("simple-git/promise")("../aggregator-release");
 const request = require("request");
 const Rox = require("rox-node");
 
+const roxApiKey = "5be1d296b38fed12b215194d";
+
 let numberOfStoriesPrinted = 0;
 
 async function sleep(ms) {
@@ -303,7 +305,7 @@ async function addMissingStoriesFromBlockers(stories) {
 }
 
 async function attachRolloutInfoToStories(stories) {
-  await Rox.setup("5be1d296b38fed12b215194d");
+  await Rox.setup(roxApiKey);
 
   const containers = {};
 
