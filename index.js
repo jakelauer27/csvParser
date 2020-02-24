@@ -361,6 +361,14 @@ function countEstimateSum(stories) {
   }, 0);
 }
 
+function storyIsConsumer(story) {
+  return story.labels.some(label => label.kind === "label" && (label.name === "new consumer" || label.name === "consumer"));
+}
+
+function storyIsAggregator(story) {
+  return story.labels.some(label => label.kind === "label" && (label.name === "prototype" || label.name === "aggregator"));
+}
+
 function storyIsSpike(story) {
   return story.labels.some(label => label.kind === "label" && label.name === "spike");
 }
@@ -383,8 +391,8 @@ async function getReleaseInfo() {
     .filter(story => !story.labels.some(label => label.kind === "label" && label.name === "close out and carry over"));
 
   pivotalStories.forEach((story) => {
-    story.isNewConsumer = story.labels.some(label => label.kind === "label" && (label.name === "new consumer" || label.name === "consumer"));
-    story.isPrototype = story.labels.some(label => label.kind === "label" && (label.name === "prototype" || label.name === "aggregator"));
+    story.isConsumer = storyIsConsumer(story);
+    story.isAggregator = storyIsAggregator(story);
     story.isSpike = storyIsSpike(story);
   });
 
@@ -446,19 +454,19 @@ async function getReleaseInfo() {
 
   printListOfStories(
     "Consumer stories",
-    storiesOnRelease.filter(story => story.isNewConsumer)
+    storiesOnRelease.filter(story => story.isConsumer)
   );
 
   printListOfStories(
     "Aggregator stories",
-    storiesOnRelease.filter(story => story.isPrototype)
+    storiesOnRelease.filter(story => story.isAggregator)
   );
 
   printListOfStories(
     numberOfStoriesPrinted > 0 ? "Other stories" : "All stories",
     storiesOnRelease
-      .filter(story => !story.isNewConsumer)
-      .filter(story => !story.isPrototype)
+      .filter(story => !story.isConsumer)
+      .filter(story => !story.isAggregator)
   );
 
   printListOfStories(
@@ -481,7 +489,7 @@ async function getReleaseInfo() {
     storiesOnRelease
       .filter(story => story.requiresDesignReview)
       .filter(story => !story.hasFeatureFlagReviews)
-      .filter(story => !story.isPrototype)
+      .filter(story => !story.isAggregator)
   );
 
   printListOfStories(
