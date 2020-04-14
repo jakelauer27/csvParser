@@ -7,6 +7,7 @@ const roxApiKey = "5be1d296b38fed12b215194d";
 
 let numberOfStoriesPrinted = 0;
 let previousReleaseDate = null;
+let currentReleaseDate = null;
 
 async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -44,12 +45,18 @@ async function getCommitMessages() {
     await git.log({from: "d6ecb0573154f36cccb4f24cd3a3683fae764976", to: "96da4134f1d5e340307df5b5133a77b42ea833cf"}), // The Kraken HF3
     await git.log({from: "96da4134f1d5e340307df5b5133a77b42ea833cf", to: "5d9faabbbf5ecabe2f16f512ae8675533a2c9029"}), // www request origin hotfix
     await git.log({from: "5d9faabbbf5ecabe2f16f512ae8675533a2c9029", to: "3933017eb7ea811ff05866b2e620f73e4ea1e4c2"}), // Deep State
+    await git.log({from: "3933017eb7ea811ff05866b2e620f73e4ea1e4c2", to: "ef7df81a001ec7716d11eae96199c558dd1b81f3"}), // Mud Floods
+    await git.log({from: "ef7df81a001ec7716d11eae96199c558dd1b81f3", to: "fcf55f855f65027058215eb4a5087e07d66f9cab"}), // Aliens built the Pyramids
+    await git.log({from: "fcf55f855f65027058215eb4a5087e07d66f9cab", to: "5de26d197288878ff454fc0b25cacb8bd4244e53"}), // Hollow Earth
+    await git.log({from: "5de26d197288878ff454fc0b25cacb8bd4244e53", to: "5d2fa8ae61ea589011151d4733091a733526cb48"}), // Card connect iframe updates
+    await git.log({from: "5d2fa8ae61ea589011151d4733091a733526cb48", to: "663f19c584ba9c6d3c8150d4b080b228b19de276"}), // Tupac Lives
   ];
 
-  const releaseCommits = await git.log({from: "3933017eb7ea811ff05866b2e620f73e4ea1e4c2", to: "HEAD"}); // Mud Floods
+  const releaseCommits = await git.log({from: "663f19c584ba9c6d3c8150d4b080b228b19de276", to: "HEAD"}); // Corn Syrup
   const lastRelease = previousReleaseCommitLogs[previousReleaseCommitLogs.length - 1];
 
   previousReleaseDate = Date.parse(lastRelease.latest.date);
+  currentReleaseDate = Date.parse(releaseCommits.all[releaseCommits.total - 1].date);
 
   const allPreviousReleaseCommits = previousReleaseCommitLogs.flatMap(commits => commits.all);
   const allPreviousReleaseCommitsMap = {};
@@ -386,6 +393,10 @@ function storyIsSpike(story) {
   return story.labels.some(label => label.kind === "label" && label.name === "spike");
 }
 
+function storyIsObsolete(story) {
+  return story.labels.some(label => label.kind === "label" && label.name === "obsolete");
+}
+
 async function getReleaseInfo() {
   const uniquePivotalIds = await getUniquePivotalIds();
 
@@ -401,20 +412,23 @@ async function getReleaseInfo() {
 
   storiesAcceptedAfterPreviousRelease
     .filter(story => allPivotalStories.every(s => s.id !== story.id))
+    .filter(story => Date.parse(story.accepted_at) >= currentReleaseDate)
     .forEach((story) => {
-      story.isFromPreviousRelease = true;
-
       allPivotalStories.push(story);
     });
 
-  const closedOutStories = allPivotalStories.filter(story => storyIsClosedOutAndCarriedOver(story));
-  const pivotalStories = allPivotalStories.filter(story => !storyIsClosedOutAndCarriedOver(story));
-
-  pivotalStories.forEach((story) => {
+  allPivotalStories.forEach((story) => {
     story.isConsumer = storyIsConsumer(story);
     story.isAggregator = storyIsAggregator(story);
     story.isSpike = storyIsSpike(story);
+    story.isObsolete = storyIsObsolete(story);
   });
+
+  const closedOutStories = allPivotalStories.filter(story => storyIsClosedOutAndCarriedOver(story));
+
+  const pivotalStories = allPivotalStories
+    .filter(story => !storyIsClosedOutAndCarriedOver(story))
+    .filter(story => !story.isObsolete);
 
   await attachBlockersToStories(pivotalStories);
 
@@ -501,7 +515,7 @@ async function getReleaseInfo() {
     "Stories requiring QA review",
     storiesOnRelease
       .filter(story => story.requiresQAReview)
-      .filter(story => !story.hasFeatureFlagReviews || story.flags.some(flag => flag.enabled))
+      .filter(story => !story.hasFeatureFlagReviews)
   );
 
   printListOfStories(
