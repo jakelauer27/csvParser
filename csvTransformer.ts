@@ -1,224 +1,172 @@
 import {createObjectCsvWriter} from "csv-writer";
 import csvToJson from "csvtojson";
+import {outputFileHeaders} from "./constants/OutputFileHeaders";
+import {EtzyCsvOrder} from "./models/EtzyCsvOrder";
+import {ShopifyCsvData} from "./models/ShopifyCsvOrder";
+import {StandardCsvOrder} from "./models/StandardCsvOrder";
 
-interface ShopifyCsvData {
-    "Date Ordered [Date Only]": string;
-    "#Order": string;
-    "Empty 1": null;
-    "Empty 2": null;
-    "SKU": string;
-    "Product Name": string;
-    "Empty 3": null;
-    "Empty 4": null;
-    "Variant Title": string;
-    "Properties": string;
-    "Shipping Fullname": string;
-    "Quantity": string;
-}
+async function mapShopifyCsvToStandardCsv(
+    csvWriter: any,
+    csvImportFileName: string,
+    logDetails: string,
+) {
+    const csvImportFilePath = `../../Downloads/${csvImportFileName}`;
 
-interface EtsyCsvData {
-    test: string;
-    etc: string;
-}
+    const shopifyDataJson: any[] = await csvToJson().fromFile(csvImportFilePath);
 
-class StandardCsvData {
-    public metal: string;
-    public date: string;
-    public orderNumber: string;
-    public shop: string;
-    public size: number | null;
-    public sku: string;
-    public design: string;
-    public designNotes: string;
-    public color: string;
-    public customization: string;
-    public name: string;
-    public board: string;
-    public shippingNotes: string;
+    const groupedOrdersByOrderNumber: { [orderNumber: string]: ShopifyCsvData[] } =
+        shopifyDataJson.reduce((groupedOrders: { [orderNumber: string]: ShopifyCsvData[] }, item: any) => {
+            item = new ShopifyCsvData(item);
 
-    constructor(initializer?: {
-        metal: string,
-        date: string,
-        orderNumber: string,
-        shop: string,
-        size: number | null,
-        sku: string,
-        design: string,
-        designNotes: string,
-        color: string,
-        customization: string,
-        name: string,
-        board: string,
-        shippingNotes: string,
-    }) {
-        this.metal = !initializer ? "" : initializer.metal;
-        this.date = !initializer ? "" : initializer.date;
-        this.orderNumber = !initializer ? "" : initializer.orderNumber;
-        this.shop = !initializer ? "" : initializer.shop;
-        this.size = !initializer ? 0 : initializer.size;
-        this.sku = !initializer ? "" : initializer.sku;
-        this.design = !initializer ? "" : initializer.design;
-        this.designNotes = !initializer ? "" : initializer.designNotes;
-        this.color = !initializer ? "" : initializer.color;
-        this.customization = !initializer ? "" : initializer.customization;
-        this.name = !initializer ? "" : initializer.name;
-        this.board = !initializer ? "" : initializer.board;
-        this.shippingNotes = !initializer ? "" : initializer.shippingNotes;
-    }
-}
+            if (groupedOrders[item["#Order"]]) {
+                groupedOrders[item["#Order"]].push(item);
+            } else {
+                groupedOrders[item["#Order"]] = [item];
+            }
 
-const outputFileName = process.argv[4];
-const outputFileHeaders = [
-    {id: "metal", title: "M?"},
-    {id: "date", title: "Date"},
-    {id: "orderNumber", title: "Order Number"},
-    {id: "shop", title: "Shop"},
-    {id: "size", title: "Size"},
-    {id: "sku", title: "Sku"},
-    {id: "design", title: "Design"},
-    {id: "designNotes", title: "Design Notes"},
-    {id: "color", title: "color"},
-    {id: "customization", title: "Customization"},
-    {id: "name", title: "Name"},
-    {id: "board", title: "Board"},
-    {id: "shippingNotes", title: "Shipping Notes"},
-];
+            return groupedOrders;
+        }, {});
 
-const csvWriter = createObjectCsvWriter({
-    header: outputFileHeaders,
-    path: `../../Desktop/${outputFileName}`,
-});
+    const standardizedOrderGroups = Object.values(groupedOrdersByOrderNumber).map((orderGroup) => {
+        return orderGroup.reduce((group: StandardCsvOrder[], order) => {
+            if (parseInt(order.Quantity, 10) === 1) {
+                group.push(order.mapToStandardOrder());
+            } else {
+                for (let i = 1; i <= parseInt(order.Quantity, 10); i++) {
+                    group.push(order.mapToStandardOrder(i));
+                }
+            }
 
-function mapShopifyCsvToStandardCsv(csvImportFileName: string, csvOutputFileName: string) {
-    const csvFilePath = `../../Downloads/${csvImportFileName}`;
-
-    csvToJson()
-        .fromFile(csvFilePath)
-        .then((shoppifyData: ShopifyCsvData[]) => {
-            const groupedOrders: { [orderNumber: string]: ShopifyCsvData[] } =
-                shoppifyData.reduce((acc: { [orderNumber: string]: ShopifyCsvData[] }, item) => {
-                    if (acc[item["#Order"]]) {
-                        acc[item["#Order"]].push(item);
-                    } else {
-                        acc[item["#Order"]] = [item];
-                    }
-
-                    return acc;
-                }, {});
-
-            const mappedGroupOrders = Object.values(groupedOrders).map((orderGroup) => {
-                return orderGroup.reduce((group: StandardCsvData[], order) => {
-                    if (parseInt(order.Quantity, 10) === 1) {
-                        group.push(mapShopifyOrderToStandard(order));
-                    } else {
-                        for (let i = 1; i <= parseInt(order.Quantity, 10); i++) {
-                            group.push(mapShopifyOrderToStandard(order, i));
-                        }
-                    }
-
-                    return group;
-                }, []);
-            });
-
-            const flatMapOrders = mappedGroupOrders.reduce((acc: StandardCsvData[], group) => {
-                group.forEach((order) => {
-                    acc.push(order);
-                });
-
-                return acc;
-            }, []);
-
-            csvWriter
-                .writeRecords(flatMapOrders as any)
-                .then(() => console.log("The CSV file was transformed successfully"));
-
-        });
-}
-
-function mapShopifyOrderToStandard(order: ShopifyCsvData, quantityOf?: number): StandardCsvData {
-    const widthColor = parseVariantTitle(order["Variant Title"]);
-    const orderIsMetal = isMetal(order.SKU);
-
-    return new StandardCsvData({
-        metal: orderIsMetal ? "M" : "",
-        date: order["Date Ordered [Date Only]"],
-        orderNumber: order["#Order"],
-        shop: "S",
-        size: widthColor ? widthColor.width : null,
-        sku: order.SKU,
-        design: order["Product Name"],
-        designNotes: "",
-        color: widthColor ? widthColor.color : "",
-        customization: parseCustomization(order.Properties),
-        name: order["Shipping Fullname"],
-        board: "",
-        shippingNotes: quantityOf ? `${quantityOf} of ${order.Quantity}` : "",
+            return group;
+        }, []);
     });
-}
 
-function isMetal(sku: string): boolean {
-    if (!sku) {
-        return false;
-    } else {
-        return !sku.includes("PROMO");
+    const cleanedOrders = standardizedOrderGroups.reduce((acc: StandardCsvOrder[], group) => {
+        group.forEach((order) => {
+            acc.push(order);
+        });
+
+        return acc;
+    }, []);
+
+    try {
+        await csvWriter.writeRecords(cleanedOrders as any);
+        console.log("The CSV file was transformed successfully");
+
+        if (logDetails === "-details") {
+            logDetailSummary(standardizedOrderGroups, cleanedOrders);
+        }
+    } catch (e) {
+        console.log("Unable to create new CSV file", e);
     }
 }
 
-function parseCustomization(customizationString: string): string {
-    if (!customizationString) {
-        return "";
+async function mapEtsyCsvToStandardCsv(
+    csvWriter: any,
+    csvImportFileName: string,
+    logDetails: string,
+) {
+    const csvImportFilePath = `../../Downloads/${csvImportFileName}`;
+
+    const etsyDataJson: any[] = await csvToJson().fromFile(csvImportFilePath);
+
+    const groupedOrdersByOrderNumber: { [orderNumber: string]: EtzyCsvOrder[] } =
+        etsyDataJson.reduce((groupedOrders: { [orderNumber: string]: EtzyCsvOrder[] }, item: any) => {
+            item = new EtzyCsvOrder(item);
+
+            if (groupedOrders[item["Order ID"]]) {
+                groupedOrders[item["Order ID"]].push(item);
+            } else {
+                groupedOrders[item["Order ID"]] = [item];
+            }
+
+            return groupedOrders;
+        }, {});
+
+    const standardizedOrderGroups = Object.values(groupedOrdersByOrderNumber).map((orderGroup) => {
+        return orderGroup.reduce((group: StandardCsvOrder[], order) => {
+            if (parseInt(order["Number of Items"], 10) === 1) {
+                group.push(order.mapToStandardOrder());
+            } else {
+                for (let i = 1; i <= parseInt(order["Number of Items"], 10); i++) {
+                    group.push(order.mapToStandardOrder(i));
+                }
+            }
+
+            return group;
+        }, []);
+    });
+
+    const cleanedOrders = standardizedOrderGroups.reduce((acc: StandardCsvOrder[], group) => {
+        group.forEach((order) => {
+            acc.push(order);
+        });
+
+        return acc;
+    }, []);
+
+    try {
+        await csvWriter.writeRecords(cleanedOrders as any);
+        console.log("The CSV file was transformed successfully");
+
+        if (logDetails === "-details") {
+            logDetailSummary(standardizedOrderGroups, cleanedOrders);
+        }
+    } catch (e) {
+        console.log("Unable to create new CSV file", e);
     }
-
-    const options = customizationString.split("\n").filter((option) => !option.includes("_Color"));
-
-    return options.reduce((customization: string, option) => {
-        customization = `${customization}${option.split(":")[1].trim()}`;
-
-        return customization;
-    }, "");
 }
 
-function parseVariantTitle(variantTitle: string): { color: string, width: number } | null {
-    if (variantTitle === "Default Title") {
-        return null;
-    }
+function logDetailSummary(standardizedOrderGroups: StandardCsvOrder[][], cleanedOrders: StandardCsvOrder[]) {
+    const totalOrders = standardizedOrderGroups.length;
+    const totalPromoItems = cleanedOrders.filter((order) => order.sku && order.sku.includes("PROMO")).length;
+    const totalItemsWithPromoItems = cleanedOrders.length;
+    const totalItemsWithoutPromoItems = totalItemsWithPromoItems - totalPromoItems;
+    const averageItemsPerOrder = (totalItemsWithPromoItems / totalOrders).toFixed(2);
+    const itemsByDesign = cleanedOrders.reduce((acc: { [design: string]: number }, order) => {
+        if (acc[order.design]) {
+            acc[order.design]++;
+        } else {
+            acc[order.design] = 1;
+        }
 
-    const splitVariants = variantTitle.split("/");
-    const width = splitVariants[0];
-    let color = splitVariants[1] ? splitVariants[1].split("(")[0] : "";
+        return acc;
+    }, {});
 
-    if (color.trim() === "Unpainted") {
-        color = "";
-    }
-
-    return {
-        color: color.trim(),
-        width: parseInt(width.replace(/\D/g, ""), 10),
-    };
+    console.log(
+        "totalOrders:", totalOrders, "\n",
+        "totalPromoItems:", totalPromoItems, "\n",
+        "totalItemsWithoutPromoItems:", totalItemsWithoutPromoItems, "\n",
+        "totalItemsWithPromoItems:", totalItemsWithPromoItems, "\n",
+        "averageItemsPerOrder:", averageItemsPerOrder, "\n",
+        "itemsByDesign:", itemsByDesign, "\n",
+    );
 }
 
-function mapEtsyCsvToStandardCsv(csvImportFileName: string, csvOutputFileName: string) {
-    //TODO: implement
-}
-
-function mapToCsv(
-    inputSource: string,
+async function mapToCsv(
+    csvType: string,
     csvImportFileName: string,
     csvOutputFileName: string,
+    logDetails: string,
 ) {
-    if (!inputSource || !csvOutputFileName || !csvImportFileName) {
-        console.log('Invalid Command Format');
+    if (!csvType || !csvOutputFileName || !csvImportFileName) {
+        console.log("Invalid Command Format");
         return;
     }
 
-    switch (inputSource) {
+    const csvWriter = createObjectCsvWriter({
+        header: outputFileHeaders,
+        path: `../../Desktop/${csvOutputFileName}`,
+    });
+
+    switch (csvType) {
         case "shopify":
-            mapShopifyCsvToStandardCsv(csvImportFileName, csvOutputFileName);
+            await mapShopifyCsvToStandardCsv(csvWriter, csvImportFileName, logDetails);
             break;
         case "etsy":
-            mapShopifyCsvToStandardCsv(csvImportFileName, csvOutputFileName);
+            await mapEtsyCsvToStandardCsv(csvWriter, csvImportFileName, logDetails);
             break;
     }
 }
 
-mapToCsv(process.argv[2], process.argv[3], process.argv[4]);
+mapToCsv(process.argv[2], process.argv[3], process.argv[4], process.argv[5]);

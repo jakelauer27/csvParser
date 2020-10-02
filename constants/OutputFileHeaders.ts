@@ -1,0 +1,15 @@
+export const outputFileHeaders = [
+    {id: "metal", title: "M?"},
+    {id: "date", title: "Date"},
+    {id: "orderNumber", title: "Order Number"},
+    {id: "shop", title: "Shop"},
+    {id: "size", title: "Size"},
+    {id: "sku", title: "Sku"},
+    {id: "design", title: "Design"},
+    {id: "designNotes", title: "Design Notes"},
+    {id: "color", title: "color"},
+    {id: "customization", title: "Customization"},
+    {id: "name", title: "Name"},
+    {id: "board", title: "Board"},
+    {id: "shippingNotes", title: "Shipping Notes"},
+];
