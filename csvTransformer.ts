@@ -67,7 +67,7 @@ class StandardCsvData {
     }
 }
 
-const outputFileName = process.argv[3];
+const outputFileName = process.argv[4];
 const outputFileHeaders = [
     {id: "metal", title: "M?"},
     {id: "date", title: "Date"},
@@ -86,7 +86,7 @@ const outputFileHeaders = [
 
 const csvWriter = createObjectCsvWriter({
     header: outputFileHeaders,
-    path: `../../Desktop/out.csv${outputFileName}`
+    path: `../../Desktop/${outputFileName}`,
 });
 
 function mapShopifyCsvToStandardCsv(csvImportFileName: string, csvOutputFileName: string) {
@@ -204,7 +204,7 @@ function mapEtsyCsvToStandardCsv(csvImportFileName: string, csvOutputFileName: s
 function mapToCsv(
     inputSource: string,
     csvImportFileName: string,
-    csvOutputFileName: string
+    csvOutputFileName: string,
 ) {
     if (!inputSource || !csvOutputFileName || !csvImportFileName) {
         console.log('Invalid Command Format');
