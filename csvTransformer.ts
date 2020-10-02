@@ -159,13 +159,17 @@ async function mapToCsv(
         path: `../../Desktop/${csvOutputFileName}`,
     });
 
-    switch (csvType) {
-        case "shopify":
-            await mapShopifyCsvToStandardCsv(csvWriter, csvImportFileName, logDetails);
-            break;
-        case "etsy":
-            await mapEtsyCsvToStandardCsv(csvWriter, csvImportFileName, logDetails);
-            break;
+    try {
+        switch (csvType) {
+            case "shopify":
+                await mapShopifyCsvToStandardCsv(csvWriter, csvImportFileName, logDetails);
+                break;
+            case "etsy":
+                await mapEtsyCsvToStandardCsv(csvWriter, csvImportFileName, logDetails);
+                break;
+        }
+    } catch (e) {
+        console.log("There was an error processing the csv files", e);
     }
 }
 
