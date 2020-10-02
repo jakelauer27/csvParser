@@ -1,16 +1,25 @@
 {
-  "name": "@campspot/aggregator-release-info",
+  "name": "@jakelauer27/csvParser",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "csvTransformer.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Braden Steffaniak",
+  "author": "Jake Lauer",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^14.11.2",
+    "csv": "^5.3.2",
+    "csv-writer": "^1.6.0",
+    "csvtojson": "^2.0.10",
     "request": "^2.88.0",
     "rox-node": "^4.8.0",
     "simple-git": "^1.124.0"
+  },
+  "devDependencies": {
+    "ts-node": "^9.0.0",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.3"
   }
 }

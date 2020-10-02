@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <wildcardResourcePatterns>
+      <entry name="!?*.java" />
+      <entry name="!?*.form" />
+      <entry name="!?*.class" />
+      <entry name="!?*.groovy" />
+      <entry name="!?*.scala" />
+      <entry name="!?*.flex" />
+      <entry name="!?*.kt" />
+      <entry name="!?*.clj" />
+    </wildcardResourcePatterns>
+    <bytecodeTargetLevel target="1.6">
+      <module name="aggregator-web-core" target="1.8" />
+      <module name="aggregator-websocket-service" target="1.8" />
+      <module name="aggregator-websocket-service-client" target="1.8" />
+      <module name="aggregator.aggregator-api.main" target="1.8" />
+      <module name="aggregator.aggregator-api.test" target="1.8" />
+      <module name="aggregator.aggregator-availability-rules.main" target="1.8" />
+      <module name="aggregator.aggregator-availability-rules.test" target="1.8" />
+      <module name="aggregator.aggregator-cache.main" target="1.8" />
+      <module name="aggregator.aggregator-cache.test" target="1.8" />
+      <module name="aggregator.aggregator-exceptions.main" target="1.8" />
+      <module name="aggregator.aggregator-exceptions.test" target="1.8" />
+      <module name="aggregator.aggregator-feature-flags.main" target="1.8" />
+      <module name="aggregator.aggregator-feature-flags.test" target="1.8" />
+      <module name="aggregator.aggregator-platform-web-core-client.main" target="1.8" />
+      <module name="aggregator.aggregator-platform-web-core-client.test" target="1.8" />
+      <module name="aggregator.aggregator-pricing-rules.main" target="1.8" />
+      <module name="aggregator.aggregator-pricing-rules.test" target="1.8" />
+      <module name="aggregator.aggregator-request-data.main" target="1.8" />
+      <module name="aggregator.aggregator-request-data.test" target="1.8" />
+      <module name="aggregator.aggregator-rules-common.main" target="1.8" />
+      <module name="aggregator.aggregator-rules-common.test" target="1.8" />
+      <module name="aggregator.aggregator-web-core.main" target="1.8" />
+      <module name="aggregator.aggregator-web-core.test" target="1.8" />
+      <module name="aggregator.aggregator-websocket-service-client.main" target="1.8" />
+      <module name="aggregator.aggregator-websocket-service-client.test" target="1.8" />
+      <module name="aggregator.aggregator-websocket-service.main" target="1.8" />
+      <module name="aggregator.aggregator-websocket-service.test" target="1.8" />
+      <module name="aggregator.buildSrc.main" target="1.8" />
+      <module name="aggregator.buildSrc.test" target="1.8" />
+      <module name="aggregator.main" target="1.8" />
+      <module name="aggregator.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="TypeScriptCompiler">
+    <option name="useConfig" value="true" />
+  </component>
+</project>
