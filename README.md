@@ -2,7 +2,7 @@
 
 ## how to use
 
-run "ts-node shopifyCsvTransformer.ts [csvImportType] [import file name] [exported file name]"
+run "npx ts-node csvTransformer.ts [csvImportType] [import file name] [exported file name]"
 
 csvImportTypeOptions:
 "shopify"
