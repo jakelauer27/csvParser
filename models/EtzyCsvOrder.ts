@@ -41,7 +41,7 @@ export class EtzyCsvOrder {
         });
     }
 
-    private parseIsMetal(sku: string): string {
+    private parseIsMetal(sku: string | null): string {
         if (!sku) {
             return "";
         } else if (sku.includes("EM")) {
