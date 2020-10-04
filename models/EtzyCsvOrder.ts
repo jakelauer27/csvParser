@@ -22,13 +22,15 @@ export class EtzyCsvOrder {
     }
 
     public mapToStandardOrder(quantityOf?: number): StandardCsvOrder {
+        const sku = quantityOf && this.SKU ? this.SKU.split(",")[quantityOf - 1] : this.SKU;                     
+                              
         return new StandardCsvOrder({
-            metal: this.parseIsMetal(),
+            metal: this.parseIsMetal(sku),
             date: this["Sale Date"],
             orderNumber: this["Order ID"],
             shop: "E",
             size: null,
-            sku: quantityOf && this.SKU ? this.SKU.split(",")[quantityOf - 1] : this.SKU,
+            sku: sku,
             design: "",
             designNotes: "",
             color: "",
@@ -39,10 +41,10 @@ export class EtzyCsvOrder {
         });
     }
 
-    private parseIsMetal(): string {
-        if (!this.SKU) {
+    private parseIsMetal(sku: string): string {
+        if (!sku) {
             return "";
-        } else if (this.SKU.includes("EM")) {
+        } else if (sku.includes("EM")) {
             return "M";
         } else {
             return "";
