@@ -42,8 +42,10 @@ export class EtzyCsvOrder {
     private parseIsMetal(): string {
         if (!this.SKU) {
             return "";
-        } else {
+        } else if (this.SKU.includes("EM")) {
             return "M";
+        } else {
+            return "";
         }
     }
 }
